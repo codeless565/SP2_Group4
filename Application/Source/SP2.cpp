@@ -85,89 +85,32 @@ void SP2::Init()
 	camera.Init(Vector3(0, 20, 0), Vector3(0, 20, -1), Vector3(0, 1, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
-	meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
-
-	meshList[GEO_GROUND] = MeshBuilder::GenerateQuad("reference", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_GROUND]->textureID = LoadTGA("Image//groundmesh.tga");
+	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
+	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
 	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_FRONT]->textureID = LoadTGA("Image//nightsky_ft.tga");
+	meshList[GEO_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
 
 	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_BACK]->textureID = LoadTGA("Image//nightsky_bk.tga");
+	meshList[GEO_BACK]->textureID = LoadTGA("Image//SpaceBack.tga");
 
 	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_LEFT]->textureID = LoadTGA("Image//nightsky_lf.tga");
+	meshList[GEO_LEFT]->textureID = LoadTGA("Image//SpaceLeft.tga");
 
 	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("right", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//nightsky_rt.tga");
+	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//SpaceRight.tga");
 
 	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("top", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_TOP]->textureID = LoadTGA("Image//nightsky_up.tga");
+	meshList[GEO_TOP]->textureID = LoadTGA("Image//SpaceTop.tga");
 
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//nightsky_dn.tga");
+	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//SpaceBottom.tga");
 
 	// story lines
-	meshList[GEO_STORY] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY]->textureID = LoadTGA("Image//testfont.tga");
+	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
-	meshList[GEO_STORY1] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY1]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_STORY2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY2]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_STORY3] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY3]->textureID = LoadTGA("Image//testfont.tga");
-
-
-	meshList[GEO_QUEST] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_QUEST1] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST1]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_QUEST2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST2]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_QUEST3] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST3]->textureID = LoadTGA("Image//testfont.tga");
-
-	// GENERAL USE
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_F2TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_F2TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//testfont.tga");
-
-
-	// coordinate text
-	meshList[GEO_TEXTx] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTx]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_TEXTy] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTy]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
-
-
-	// action text
-	meshList[GEO_SITTEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_SITTEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_REWARD] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_REWARD]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_DOOR] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_DOOR]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//bh");
+	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//Ship1.obj");
 	//meshList[TEST_MODEL]->textureID = LoadTGA("Image//testfont.tga");
 
 	light[0].type = Light::LIGHT_SPOT;
@@ -263,6 +206,54 @@ void SP2::Update(double dt)
 	}
 
 	camera.Update(1 * dt);
+}
+
+void SP2::Render()
+{
+
+	if (light[0].type == Light::LIGHT_DIRECTIONAL)
+	{
+		Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
+		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+	}
+	else if (light[0].type == Light::LIGHT_SPOT)
+	{
+		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+		Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
+		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
+	}
+	else
+	{
+		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+	}
+
+
+	// Render VBO here
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Temp variables
+	Mtx44 MVP;
+	viewStack.LoadIdentity();
+	viewStack.LookAt(camera.position.x, camera.position.y,
+		camera.position.z, camera.target.x, camera.target.y,
+		camera.target.z, camera.up.x, camera.up.y, camera.up.z);
+	modelStack.LoadIdentity();
+
+	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+
+	RenderSkybox();
+	//RenderMesh(meshList[GEO_AXES], false);
+
+	// center
+	modelStack.PushMatrix();
+//	modelStack.Rotate(-90, 1, 0, 0);
+	modelStack.Scale(5, 5, 5);
+	RenderMesh(meshList[TEST_MODEL], false);
+	modelStack.PopMatrix();
 }
 
 void SP2::RenderMesh(Mesh *mesh, bool enableLight)
@@ -442,57 +433,6 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	modelStack.PopMatrix();
 
 	glEnable(GL_DEPTH_TEST);
-}
-
-void SP2::Render()
-{
-
-	if (light[0].type == Light::LIGHT_DIRECTIONAL)
-	{
-		Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
-	}
-	else if (light[0].type == Light::LIGHT_SPOT)
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
-	else
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-	}
-
-
-	// Render VBO here
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//Temp variables
-	Mtx44 MVP;
-	viewStack.LoadIdentity();
-	viewStack.LookAt(camera.position.x, camera.position.y,
-		camera.position.z, camera.target.x, camera.target.y,
-		camera.target.z, camera.up.x, camera.up.y, camera.up.z);
-	modelStack.LoadIdentity();
-
-	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-
-	RenderSkybox();
-	//RenderMesh(meshList[GEO_AXES], false);
-
-	// center
-	modelStack.PushMatrix();
-	modelStack.Rotate(-90, 1, 0, 0);
-	modelStack.Scale(1000, 1000, 1000);
-	RenderMesh(meshList[TEST_MODEL], false);
-	modelStack.PopMatrix();
-
-
-
 }
 
 void SP2::Exit()
