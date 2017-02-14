@@ -15,7 +15,7 @@ class SP2 : public Scene
 	{
 		GEO_AXES,
 		GEO_QUAD,
-		GEO_GROUND,
+
 		//SKYBOX
 		GEO_LEFT,
 		GEO_RIGHT,
@@ -31,6 +31,20 @@ class SP2 : public Scene
 		//SP Model
 		TEST_MODEL,
 
+
+		//MODELS
+
+		
+		GEO_LAMPLIGHT,
+
+		//TEXT
+		GEO_TEXT,
+		GEO_TEXT2,
+		GEO_TEXTx,
+		GEO_TEXTy,
+		GEO_TEXTz,
+
+		// actions
 
 		NUM_GEOMETRY,
 	};

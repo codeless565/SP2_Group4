@@ -85,6 +85,7 @@ void SP2::Init()
 	camera.Init(Vector3(0, 20, 0), Vector3(0, 20, -1), Vector3(0, 1, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
+
 	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
 	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
@@ -113,6 +114,28 @@ void SP2::Init()
 	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//Ship1.obj");
 	//meshList[TEST_MODEL]->textureID = LoadTGA("Image//testfont.tga");
 
+	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
+	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
+	
+
+	// GENERAL USE
+	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
+
+	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//testfont.tga");
+
+
+	// coordinate text
+	meshList[GEO_TEXTx] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXTx]->textureID = LoadTGA("Image//testfont.tga");
+
+	meshList[GEO_TEXTy] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXTy]->textureID = LoadTGA("Image//testfont.tga");
+
+	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
+	
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
 	light[0].position.Set(0, 0, 0);
@@ -255,6 +278,78 @@ void SP2::Render()
 	RenderMesh(meshList[TEST_MODEL], false);
 	modelStack.PopMatrix();
 }
+
+//void SP2::Render()
+//{
+//
+//	if (light[0].type == Light::LIGHT_DIRECTIONAL)
+//	{
+//		Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
+//		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+//		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+//	}
+//	else if (light[0].type == Light::LIGHT_SPOT)
+//	{
+//		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+//		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+//		Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
+//		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
+//	}
+//	else
+//	{
+//		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+//		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+//	}
+//
+//
+//	// Render VBO here
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//	//Temp variables
+//	Mtx44 MVP;
+//	viewStack.LoadIdentity();
+//	viewStack.LookAt(camera.position.x, camera.position.y,
+//		camera.position.z, camera.target.x, camera.target.y,
+//		camera.target.z, camera.up.x, camera.up.y, camera.up.z);
+//	modelStack.LoadIdentity();
+//
+//	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+//	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+//
+//	RenderSkybox();
+//	RenderMesh(meshList[GEO_AXES], false);
+//
+//	// center
+//	modelStack.PushMatrix();
+//	modelStack.Rotate(-90, 1, 0, 0);
+//	modelStack.Scale(1000, 1000, 1000);
+//	RenderMesh(meshList[GEO_QUAD], false);
+//	modelStack.PopMatrix();
+//
+//	//modelStack.PushMatrix();
+//	//modelStack.Translate(-500, -1300, 0);
+//	//modelStack.Scale(500, 500, 500);
+//	//RenderMesh(meshList[GEO_LAMPLIGHT], false);
+//	//modelStack.PopMatrix();
+//	
+//	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
+//
+//	std::string s = std::to_string(framerate);
+//
+//	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 3, 5, 19);
+//
+//	std::string cordx = std::to_string(camera.position.x);
+//	RenderTextOnScreen(meshList[GEO_TEXTx], cordx, Color(0, 1, 0), 3, 5, 18);
+//
+//
+//	std::string cordy = std::to_string(camera.position.y);
+//	RenderTextOnScreen(meshList[GEO_TEXTy], cordy, Color(0, 1, 0), 3, 5, 17);
+//
+//	std::string cordz = std::to_string(camera.position.z);
+//	RenderTextOnScreen(meshList[GEO_TEXTz], cordz, Color(0, 1, 0), 3, 5, 16);
+//
+//	
+//}
 
 void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 {
