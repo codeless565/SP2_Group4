@@ -25,7 +25,10 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 void FpCamera::Update(double dt)
 {
 	static const float CAMERA_SPEED = 100.f;
+	Vector3 oripos = { 0, 20, 100 };
 
+	if (!obstruction({ -75, 0, -78 }, { 75, 145, 75 })) // }} another coord 
+	{
 
 		if (Application::IsKeyPressed('A'))
 		{
@@ -103,6 +106,7 @@ void FpCamera::Update(double dt)
 				}
 				else
 				{
+					position.y += view.y;
 					position.z = position.z + view.z;
 				}
 			}
@@ -113,11 +117,13 @@ void FpCamera::Update(double dt)
 				}
 				else
 				{
+					position.y += view.y;
 					position.x = position.x + view.x;
 				}
 			}
 			else
 			{
+				position += view;
 				position.x = position.x + view.x;
 				position.z = position.z + view.z;
 			}
@@ -135,6 +141,7 @@ void FpCamera::Update(double dt)
 				}
 				else
 				{
+					position.y -= view.y;
 					position.z = position.z - view.z;
 				}
 			}
@@ -145,11 +152,13 @@ void FpCamera::Update(double dt)
 				}
 				else
 				{
+					position.y -= view.y;
 					position.x = position.x - view.x;
 				}
 			}
 			else
 			{
+				position -= view;
 				position.x = position.x - view.x;
 				position.z = position.z - view.z;
 			}
@@ -214,6 +223,13 @@ void FpCamera::Update(double dt)
 			target = position + view;
 		}
 
+		oripos = position;
+	}
+	else
+	{
+		position = oripos;
+	}
+
 
 	if (Application::IsKeyPressed('N'))
 	{
@@ -244,10 +260,14 @@ void FpCamera::Reset()
 	up = defaultUp;
 }
 
-void FpCamera::SitReset()
+bool FpCamera::obstruction(Vector3 min, Vector3 max)
 {
-	position.x = 75;
-	position.z = 270;
-	target = defaultTarget;
-	up = defaultUp;
+	if (position.x > min.x && position.x < max.x &&
+		position.y > min.y && position.y < max.y &&
+		position.z > min.z && position.z < max.z)
+	{
+		return true;
+	}
+	else
+		return false;
 }

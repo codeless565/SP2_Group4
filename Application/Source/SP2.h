@@ -15,7 +15,7 @@ class SP2 : public Scene
 	{
 		GEO_AXES,
 		GEO_QUAD,
-		GEO_GROUND,
+
 		//SKYBOX
 		GEO_LEFT,
 		GEO_RIGHT,
@@ -29,22 +29,8 @@ class SP2 : public Scene
 
 		//MODELS
 
-		GEO_BUILDINGBASE,
-		GEO_REDBASE,
-		GEO_MAGENTABASE,
-		GEO_BLUEBASE,
-		GEO_GREENBASE,
-		GEO_YELLOWBASE,
-		GEO_BUILDINGDOOR,
-		GEO_CHEST,
-
-		GEO_MASSBUILDING,
-		GEO_BUSSTOP,
-		GEO_BARRIER,
-		GEO_DUSTBIN,
-		GEO_LAMPPOST,
+		
 		GEO_LAMPLIGHT,
-		GEO_CAR,
 
 		//TEXT
 		GEO_TEXT,
@@ -54,23 +40,6 @@ class SP2 : public Scene
 		GEO_TEXTz,
 
 		// actions
-		GEO_SITTEXT,
-		GEO_REWARD,
-		GEO_F2TEXT,
-		GEO_DOOR,
-		// f1 story
-		GEO_STORY,
-		GEO_STORY1,
-		GEO_STORY2,
-		GEO_STORY3,
-		// f2 quest
-		GEO_QUEST,
-		GEO_QUEST1,
-		GEO_QUEST2,
-		GEO_QUEST3,
-
-		//SP Model
-		TEST_MODEL,
 
 
 		NUM_GEOMETRY,

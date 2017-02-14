@@ -27,7 +27,9 @@ public:
 	virtual void Update(double dt);
 	virtual void Reset();
 
-	virtual void SitReset();
+
+	bool obstruction(Vector3 min, Vector3 max);
+
 };
 
 #endif

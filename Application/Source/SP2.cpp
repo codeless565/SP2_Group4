@@ -88,8 +88,7 @@ void SP2::Init()
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
 	meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
-	meshList[GEO_GROUND] = MeshBuilder::GenerateQuad("reference", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_GROUND]->textureID = LoadTGA("Image//groundmesh.tga");
+
 
 	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), 1.0f, 1.0f);
 	meshList[GEO_FRONT]->textureID = LoadTGA("Image//nightsky_ft.tga");
@@ -109,38 +108,15 @@ void SP2::Init()
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1), 1.0f, 1.0f);
 	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//nightsky_dn.tga");
 
-	// story lines
-	meshList[GEO_STORY] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_STORY1] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY1]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_STORY2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY2]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_STORY3] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_STORY3]->textureID = LoadTGA("Image//testfont.tga");
+	meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
+	meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
 
 
-	meshList[GEO_QUEST] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST]->textureID = LoadTGA("Image//testfont.tga");
 
-	meshList[GEO_QUEST1] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST1]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_QUEST2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST2]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_QUEST3] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_QUEST3]->textureID = LoadTGA("Image//testfont.tga");
 
 	// GENERAL USE
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_F2TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_F2TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
 	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//testfont.tga");
@@ -156,19 +132,6 @@ void SP2::Init()
 	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
 
-
-	// action text
-	meshList[GEO_SITTEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_SITTEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_REWARD] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_REWARD]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_DOOR] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_DOOR]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//bh");
-	//meshList[TEST_MODEL]->textureID = LoadTGA("Image//testfont.tga");
 
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
@@ -482,14 +445,42 @@ void SP2::Render()
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
 	RenderSkybox();
-	//RenderMesh(meshList[GEO_AXES], false);
+	RenderMesh(meshList[GEO_AXES], false);
 
 	// center
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
 	modelStack.Scale(1000, 1000, 1000);
-	RenderMesh(meshList[TEST_MODEL], false);
+	RenderMesh(meshList[GEO_QUAD], false);
 	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-500, -1300, 0);
+	modelStack.Scale(500, 500, 500);
+	RenderMesh(meshList[GEO_LAMPLIGHT], false);
+	modelStack.PopMatrix();
+
+
+
+
+
+
+	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
+
+	std::string s = std::to_string(framerate);
+
+	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 3, 5, 19);
+
+	std::string cordx = std::to_string(camera.position.x);
+	RenderTextOnScreen(meshList[GEO_TEXTx], cordx, Color(0, 1, 0), 3, 5, 18);
+
+
+	std::string cordy = std::to_string(camera.position.y);
+	RenderTextOnScreen(meshList[GEO_TEXTy], cordy, Color(0, 1, 0), 3, 5, 17);
+
+	std::string cordz = std::to_string(camera.position.z);
+	RenderTextOnScreen(meshList[GEO_TEXTz], cordz, Color(0, 1, 0), 3, 5, 16);
+
 
 
 
