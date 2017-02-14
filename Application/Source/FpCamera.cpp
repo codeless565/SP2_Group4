@@ -27,8 +27,8 @@ void FpCamera::Update(double dt)
 	static const float CAMERA_SPEED = 100.f;
 	Vector3 oripos = { 0, 20, 100 };
 
-	//if (!obstruction({ -75, 0, -78 }, { 75, 145, 75 })) // }} another coord 
-	//{
+	if (!obstruction({ -75, 0, -78 }, { 75, 145, 75 })) // }} another coord 
+	{
 
 		if (Application::IsKeyPressed('A'))
 		{
@@ -223,13 +223,13 @@ void FpCamera::Update(double dt)
 			target = position + view;
 		}
 
-	//	oripos = position;
-	/*}
+		oripos = position;
+	}
 	else
 	{
 		position = oripos;
 	}
-*/
+
 
 	if (Application::IsKeyPressed('N'))
 	{
