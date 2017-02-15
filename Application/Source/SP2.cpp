@@ -82,7 +82,7 @@ void SP2::Init()
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
 
-	camera.Init(Vector3(0, 20, 0), Vector3(0, 20, -1), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 100, 0), Vector3(0, 100, 1), Vector3(0, 1, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 
@@ -111,8 +111,29 @@ void SP2::Init()
 	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
-	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//Rock3.obj");
-	meshList[TEST_MODEL]->textureID = LoadTGA("Image//Rock2.tga");
+	meshList[SPACESTATION_TOP] = MeshBuilder::GenerateOBJ("SpaceStation_Top", "OBJ//SSTop.obj");
+	meshList[SPACESTATION_TOP]->textureID = LoadTGA("Image//SSTop.tga");
+
+	meshList[SPACESTATION_MID] = MeshBuilder::GenerateOBJ("SpaceStation_Mid", "OBJ//SSMid.obj");
+	meshList[SPACESTATION_MID]->textureID = LoadTGA("Image//SSMid.tga");
+
+	meshList[SPACESTATION_BOTTOM] = MeshBuilder::GenerateOBJ("SpaceStation_Bottom", "OBJ//SSBottom.obj");
+	meshList[SPACESTATION_BOTTOM]->textureID = LoadTGA("Image//SSBottom.tga");
+
+	meshList[SPACESTATION_BODY] = MeshBuilder::GenerateOBJ("SpaceStation_Bottom", "OBJ//SSBody.obj");
+	meshList[SPACESTATION_BODY]->textureID = LoadTGA("Image//SSBody.tga");
+
+	meshList[PLAYERSHIP_BODY] = MeshBuilder::GenerateOBJ("PlayerShip_Body", "OBJ//PlayerShipBody.obj");
+	meshList[PLAYERSHIP_BODY]->textureID = LoadTGA("Image//PlayerShipBody.tga");
+
+	meshList[PLAYERSHIP_ENGINE] = MeshBuilder::GenerateOBJ("PlayerShip_Engine", "OBJ//PlayerShipEngine.obj");
+	meshList[PLAYERSHIP_ENGINE]->textureID = LoadTGA("Image//PlayerShipEngine.tga");
+
+	meshList[BATTLESHIP_BODY] = MeshBuilder::GenerateOBJ("BattleShip_Body", "OBJ//BattleShipBody.obj");
+	meshList[BATTLESHIP_BODY]->textureID = LoadTGA("Image//BattleShipBody.tga");
+
+	meshList[BATTLESHIP_ENGINE] = MeshBuilder::GenerateOBJ("BattleShip_Engine", "OBJ//BattleShipEngine.obj");
+	meshList[BATTLESHIP_ENGINE]->textureID = LoadTGA("Image//BattleShipEngine.tga");
 
 	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
 	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
@@ -271,11 +292,59 @@ void SP2::Render()
 	RenderSkybox();
 	//RenderMesh(meshList[GEO_AXES], false);
 
-	// center
+	// Space Station
 	modelStack.PushMatrix();
-//	modelStack.Rotate(-90, 1, 0, 0);
+	modelStack.Translate(500, 10, 500);
+	modelStack.Rotate(30, 0, 0, 1);
+	modelStack.Scale(50, 50, 50);
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[SPACESTATION_TOP], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[SPACESTATION_MID], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[SPACESTATION_BOTTOM], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[SPACESTATION_BODY], false);
+		modelStack.PopMatrix();
+	}
+	modelStack.PopMatrix();
+
+	// PlayerShip
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 0, -100);
 	modelStack.Scale(5, 5, 5);
-	RenderMesh(meshList[TEST_MODEL], false);
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[PLAYERSHIP_BODY], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+		modelStack.PopMatrix();
+	}
+	modelStack.PopMatrix();
+
+	// BattleShip
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 0, 300);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Scale(20, 20, 20);
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[BATTLESHIP_BODY], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[BATTLESHIP_ENGINE], false);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
 }
 
