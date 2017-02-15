@@ -89,30 +89,30 @@ void SP2::Init()
 	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
 	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
-	meshList[GEO_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
+	meshList[SPACE_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1));
+	meshList[SPACE_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
 
-	meshList[GEO_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_BACK]->textureID = LoadTGA("Image//SpaceBack.tga");
+	meshList[SPACE_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1));
+	meshList[SPACE_BACK]->textureID = LoadTGA("Image//SpaceBack.tga");
 
-	meshList[GEO_LEFT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_LEFT]->textureID = LoadTGA("Image//SpaceLeft.tga");
+	meshList[SPACE_LEFT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1));
+	meshList[SPACE_LEFT]->textureID = LoadTGA("Image//SpaceLeft.tga");
 
-	meshList[GEO_RIGHT] = MeshBuilder::GenerateQuad("right", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//SpaceRight.tga");
+	meshList[SPACE_RIGHT] = MeshBuilder::GenerateQuad("right", Color(1, 1, 1));
+	meshList[SPACE_RIGHT]->textureID = LoadTGA("Image//SpaceRight.tga");
 
-	meshList[GEO_TOP] = MeshBuilder::GenerateQuad("top", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_TOP]->textureID = LoadTGA("Image//SpaceTop.tga");
+	meshList[SPACE_TOP] = MeshBuilder::GenerateQuad("top", Color(1, 1, 1));
+	meshList[SPACE_TOP]->textureID = LoadTGA("Image//SpaceTop.tga");
 
-	meshList[GEO_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1), 1.0f, 1.0f);
-	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//SpaceBottom.tga");
+	meshList[SPACE_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1));
+	meshList[SPACE_BOTTOM]->textureID = LoadTGA("Image//SpaceBottom.tga");
 
 	// story lines
 	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
-	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//Ship1.obj");
-	//meshList[TEST_MODEL]->textureID = LoadTGA("Image//testfont.tga");
+	meshList[TEST_MODEL] = MeshBuilder::GenerateOBJ("Test", "OBJ//Rock3.obj");
+	meshList[TEST_MODEL]->textureID = LoadTGA("Image//Rock2.tga");
 
 	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
 	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
@@ -396,59 +396,53 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 
 void SP2::RenderSkybox()
 {
-
-
 	modelStack.PushMatrix();
 	modelStack.Rotate(rotateskybox, 0, 1, 0);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 1998);
+		modelStack.Translate(0, 0, -1995);
+		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Scale(4000, 4000, 4000);
+		RenderMesh(meshList[SPACE_FRONT], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 0, 1995);
+		modelStack.Rotate(180, 0, 0, 1);
+		modelStack.Rotate(-90, 1, 0, 0);
+		modelStack.Scale(4000, 4000, 4000);
+		RenderMesh(meshList[SPACE_BACK], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 1995, 0);
 		modelStack.Rotate(180, 0, 1, 0);
+		modelStack.Rotate(180, 1, 0, 0);
 		modelStack.Scale(4000, 4000, 4000);
-		RenderMesh(meshList[GEO_BACK], false);
+		RenderMesh(meshList[SPACE_TOP], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -1998);
+		modelStack.Translate(0, -1995, 0);
+		modelStack.Rotate(-180, 0, 1, 0);
 		modelStack.Scale(4000, 4000, 4000);
-		//scale, translate, rotate
-		RenderMesh(meshList[GEO_FRONT], false);
+		RenderMesh(meshList[SPACE_BOTTOM], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 1998, 0);
+		modelStack.Translate(-1995, 0, 0);
+		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Rotate(-90, 0, 0, 1);
+		modelStack.Scale(4000, 4000, 4000);
+		RenderMesh(meshList[SPACE_LEFT], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(1995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(90, 0, 0, 1);
 		modelStack.Scale(4000, 4000, 4000);
-		//scale, translate, rotate
-		RenderMesh(meshList[GEO_TOP], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, -1998, 0);
-		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(4000, 4000, 4000);
-		//scale, translate, rotate
-		RenderMesh(meshList[GEO_BOTTOM], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(-1998, 0, 0);
-		modelStack.Rotate(180, 0, 1, 0);
-		modelStack.Rotate(-90, 0, 1, 0);
-		modelStack.Scale(4000, 4000, 4000);
-		//scale, translate, rotate
-		RenderMesh(meshList[GEO_LEFT], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(1998, 0, 0);
-		modelStack.Rotate(180, 0, 1, 0);
-		modelStack.Rotate(90, 0, 1, 0);
-		modelStack.Scale(4000, 4000, 4000);
-		//scale, translate, rotate
-		RenderMesh(meshList[GEO_RIGHT], false);
+		RenderMesh(meshList[SPACE_RIGHT], false);
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
