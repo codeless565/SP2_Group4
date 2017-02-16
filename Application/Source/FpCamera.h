@@ -19,7 +19,8 @@ public:
 
 	Vector3 checkPos;
 
-	float pitch= 0;
+	float yaw;
+	float pitch;
 
 	FpCamera();
 	~FpCamera();

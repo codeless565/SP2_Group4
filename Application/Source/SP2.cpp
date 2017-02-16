@@ -82,12 +82,15 @@ void SP2::Init()
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
 
-	camera.Init(Vector3(0, 100, 0), Vector3(0, 100, 1), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 100, 0), Vector3(0, 100, 10), Vector3(0, 10, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 
 	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
 	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
+
+	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
 	meshList[SPACE_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1));
 	meshList[SPACE_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
@@ -107,22 +110,6 @@ void SP2::Init()
 	meshList[SPACE_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1));
 	meshList[SPACE_BOTTOM]->textureID = LoadTGA("Image//SpaceBottom.tga");
 
-	// story lines
-	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[SPACESTATION_TOP] = MeshBuilder::GenerateOBJ("SpaceStation_Top", "OBJ//SSTop.obj");
-	meshList[SPACESTATION_TOP]->textureID = LoadTGA("Image//SSTop.tga");
-
-	meshList[SPACESTATION_MID] = MeshBuilder::GenerateOBJ("SpaceStation_Mid", "OBJ//SSMid.obj");
-	meshList[SPACESTATION_MID]->textureID = LoadTGA("Image//SSMid.tga");
-
-	meshList[SPACESTATION_BOTTOM] = MeshBuilder::GenerateOBJ("SpaceStation_Bottom", "OBJ//SSBottom.obj");
-	meshList[SPACESTATION_BOTTOM]->textureID = LoadTGA("Image//SSBottom.tga");
-
-	meshList[SPACESTATION_BODY] = MeshBuilder::GenerateOBJ("SpaceStation_Bottom", "OBJ//SSBody.obj");
-	meshList[SPACESTATION_BODY]->textureID = LoadTGA("Image//SSBody.tga");
-
 	meshList[PLAYERSHIP_BODY] = MeshBuilder::GenerateOBJ("PlayerShip_Body", "OBJ//PlayerShipBody.obj");
 	meshList[PLAYERSHIP_BODY]->textureID = LoadTGA("Image//PlayerShipBody.tga");
 
@@ -135,17 +122,18 @@ void SP2::Init()
 	meshList[BATTLESHIP_ENGINE] = MeshBuilder::GenerateOBJ("BattleShip_Engine", "OBJ//BattleShipEngine.obj");
 	meshList[BATTLESHIP_ENGINE]->textureID = LoadTGA("Image//BattleShipEngine.tga");
 
+	meshList[ENEMYSHIP] = MeshBuilder::GenerateOBJ("EnemyShip", "OBJ//EnemyShip.obj");
+	meshList[ENEMYSHIP]->textureID = LoadTGA("Image//EnemyShip.tga");
+
 	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
 	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
 	
-
 	// GENERAL USE
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
 
 	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//testfont.tga");
-
 
 	// coordinate text
 	meshList[GEO_TEXTx] = MeshBuilder::GenerateText("text", 16, 16);
@@ -156,7 +144,10 @@ void SP2::Init()
 
 	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
-	
+		
+	InitSpaceStation();
+	InitAsteroidField();
+
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
 	light[0].position.Set(0, 0, 0);
@@ -190,19 +181,18 @@ void SP2::Init()
 
 
 	Mtx44 projection;
-	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 5000.f);
+	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 10000.f);
 	projectionStack.LoadMatrix(projection);
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
-
+	BShipEngine = 0;
+	PShipRotateHori = 0;
+	PShipRotateVerti = 0;
 }
-
-
 
 void SP2::Update(double dt)
 {
-
 	framerate = 1 / dt;
 	static float ROT_LIMIT = 45.f;
 	static float SCALE_LIMIT = 5.f;
@@ -249,12 +239,30 @@ void SP2::Update(double dt)
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 	}
 
-	camera.Update(1 * dt);
+	BShipEngine -= (float)(20 * dt);
+	
+	if (Application::IsKeyPressed(VK_LEFT))
+	{
+		PShipRotateHori += (float)(50 * dt);
+	}
+	if (Application::IsKeyPressed(VK_RIGHT))
+	{
+		PShipRotateHori -= (float)(50 * dt);
+	}
+	if (Application::IsKeyPressed(VK_UP))
+	{
+		PShipRotateVerti -= (float)(50 * dt);
+	}
+	if (Application::IsKeyPressed(VK_DOWN))
+	{
+		PShipRotateVerti += (float)(50 * dt);
+	}
+	camera.Update(dt);
+	UpdateSpaceStation(dt);
 }
 
 void SP2::Render()
 {
-
 	if (light[0].type == Light::LIGHT_DIRECTIONAL)
 	{
 		Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
@@ -274,7 +282,6 @@ void SP2::Render()
 		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 	}
 
-
 	// Render VBO here
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -293,40 +300,26 @@ void SP2::Render()
 	//RenderMesh(meshList[GEO_AXES], false);
 
 	// Space Station
-	modelStack.PushMatrix();
-	modelStack.Translate(500, 10, 500);
-	modelStack.Rotate(30, 0, 0, 1);
-	modelStack.Scale(50, 50, 50);
-	{
-		modelStack.PushMatrix();
-		RenderMesh(meshList[SPACESTATION_TOP], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		RenderMesh(meshList[SPACESTATION_MID], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		RenderMesh(meshList[SPACESTATION_BOTTOM], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		RenderMesh(meshList[SPACESTATION_BODY], false);
-		modelStack.PopMatrix();
-	}
-	modelStack.PopMatrix();
+	RenderSpaceStation();
 
 	// PlayerShip
 	modelStack.PushMatrix();
-	modelStack.Translate(0, 0, -100);
-	modelStack.Scale(5, 5, 5);
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
+	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
 	{
 		modelStack.PushMatrix();
-		RenderMesh(meshList[PLAYERSHIP_BODY], false);
-		modelStack.PopMatrix();
+		modelStack.Translate(0, -10, 10);
+		modelStack.Scale(5, 5, 5);
+		{
+			modelStack.PushMatrix();
+			RenderMesh(meshList[PLAYERSHIP_BODY], false);
+			modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+			modelStack.PushMatrix();
+			RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+			modelStack.PopMatrix();
+		}
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
@@ -342,10 +335,21 @@ void SP2::Render()
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
+		modelStack.Rotate(BShipEngine, 0, 0, 1);
 		RenderMesh(meshList[BATTLESHIP_ENGINE], false);
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
+
+	// EnemyShip
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 0, 100);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Scale(5, 5, 5);
+	RenderMesh(meshList[ENEMYSHIP], false);
+	modelStack.PopMatrix();
+
+	RenderAsteroidField();
 }
 
 //void SP2::Render()
@@ -469,48 +473,48 @@ void SP2::RenderSkybox()
 	modelStack.Rotate(rotateskybox, 0, 1, 0);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -1995);
+		modelStack.Translate(0, 0, -2995);
 		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_FRONT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 1995);
+		modelStack.Translate(0, 0, 2995);
 		modelStack.Rotate(180, 0, 0, 1);
 		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_BACK], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 1995, 0);
+		modelStack.Translate(0, 2995, 0);
 		modelStack.Rotate(180, 0, 1, 0);
 		modelStack.Rotate(180, 1, 0, 0);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_TOP], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -1995, 0);
+		modelStack.Translate(0, -2995, 0);
 		modelStack.Rotate(-180, 0, 1, 0);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_BOTTOM], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(-1995, 0, 0);
+		modelStack.Translate(-2995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_LEFT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(1995, 0, 0);
+		modelStack.Translate(2995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(90, 0, 0, 1);
-		modelStack.Scale(4000, 4000, 4000);
+		modelStack.Scale(6000, 6000, 6000);
 		RenderMesh(meshList[SPACE_RIGHT], false);
 		modelStack.PopMatrix();
 	}
@@ -557,10 +561,6 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	projectionStack.LoadMatrix(ortho);
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity(); //No need camera for ortho mode
-
-
-
-
 
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity(); //Reset modelStack

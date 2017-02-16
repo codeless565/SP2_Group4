@@ -7,6 +7,7 @@
 #include "MatrixStack.h"
 #include "Light.h"
 #include "Material.h"
+#include <vector>
 
 
 class SP2 : public Scene
@@ -34,6 +35,7 @@ class SP2 : public Scene
 		TEST_MODEL3,
 		TEST_MODEL4,
 
+		//Ships
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
 		SPACESTATION_BOTTOM,
@@ -45,8 +47,11 @@ class SP2 : public Scene
 		BATTLESHIP_BODY,
 		BATTLESHIP_ENGINE,
 
+		ENEMYSHIP,
 
-		//MODELS
+		//Asteroids
+		ASTEROID1,
+		ASTEROID2,
 
 		
 		GEO_LAMPLIGHT,
@@ -100,25 +105,6 @@ public:
 	virtual void Update(double dt);
 	virtual void Render();
 	virtual void Exit();
-	float framerate;
-
-	float redbaserotate;
-	float magentabaserotate;
-	float bluebaserotate;
-	float greenbaserotate;
-	float yellowbaserotate;
-	float buildingdoortrans;
-	float rotateskybox;
-	bool buildingrotate;
-	bool dooropen;
-	bool showdisplay;
-	bool reward;
-	bool story;
-	bool quest;
-	bool completequest1;
-	bool completequest2;
-	bool completequest3;
-	bool questcompleted;
 
 private:
 	unsigned m_vertexArrayID;
@@ -127,8 +113,6 @@ private:
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
-	float rotateAngle;
-
 	FpCamera camera;
 
 	MS modelStack, viewStack, projectionStack;
@@ -136,15 +120,32 @@ private:
 	Light light[1];
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderSkybox();
-	void RenderBuilding();
-	void RenderMassBuilding();
-	void RenderLampPost();
-	void RenderGroundMesh();
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 
+	void InitAsteroidField();
+	void RenderAsteroidField();
 
+	void InitSpaceStation();
+	void UpdateSpaceStation(double dt);
+	void RenderSpaceStation();
 
+	float rotateAngle;
+	float framerate;
+	float rotateskybox;
+
+	//SpaceStation
+	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;
+
+	//BattleShip
+	float BShipEngine;
+
+	//PlayerShip
+	float PShipEngine, PShipRotateHori, PShipRotateVerti;
+
+	//Asteroids
+	void RNGAsteroidPos();
+	std::vector <Vector3> asteroids;
 };
 
 #endif

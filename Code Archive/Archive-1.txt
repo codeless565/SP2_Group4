@@ -1,0 +1,19 @@
+// PlayerShip
+modelStack.PushMatrix();
+modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+modelStack.Rotate(PShipRotate, 0, 1, 0);
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(3, -10, 10);
+	modelStack.Scale(5, 5, 5);
+	{
+		modelStack.PushMatrix();
+		RenderMesh(meshList[PLAYERSHIP_BODY], false);
+		modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+		modelStack.PopMatrix();
+	}
+	modelStack.PopMatrix();
+}
+modelStack.PopMatrix();
