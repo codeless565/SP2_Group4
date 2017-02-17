@@ -145,6 +145,12 @@ void SP2::Init()
 	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
 		
+	//AABBList[AABB_LEFT] = new AABB({ -990, 0, 0 }, { 1000, 1000, 1000 });
+	//AABBList[AABB_RIGHT] = new AABB({ 990, 0, 0 }, { 1000, 1000, 1000 });
+	//AABBList[AABB_FRONT] = new AABB({ 0, 0, 990 }, { 1000, 1000, 1000 });
+	//AABBList[AABB_BACK] = new AABB({ 0, 0, -990 }, { 1000, 1000, 1000 });
+	//AABBList[AABB_ENEMYSHIP] = new AABB({ 0, 0, 100 }, { 20 *2,20,20 * 5 });
+	
 	InitSpaceStation();
 	InitAsteroidField();
 
@@ -239,8 +245,9 @@ void SP2::Update(double dt)
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 	}
 
+	//BattleShip
 	BShipEngine -= (float)(20 * dt);
-	
+	//SpaceStation
 	if (Application::IsKeyPressed(VK_LEFT))
 	{
 		PShipRotateHori += (float)(50 * dt);
@@ -257,6 +264,18 @@ void SP2::Update(double dt)
 	{
 		PShipRotateVerti += (float)(50 * dt);
 	}
+	//==
+
+	//for (int i = 0; i < sizeof(AABBList) / sizeof(int); i++)
+	//{
+	//	if (CheckCollision(AABBList[i]))
+	//	{
+	//		camera.Reset();
+	//	}
+	//}
+
+	CheckAsteroidCollision();
+
 	camera.Update(dt);
 	UpdateSpaceStation(dt);
 }
@@ -297,7 +316,7 @@ void SP2::Render()
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
 	RenderSkybox();
-	//RenderMesh(meshList[GEO_AXES], false);
+	RenderMesh(meshList[GEO_AXES], false);
 
 	// Space Station
 	RenderSpaceStation();
@@ -350,6 +369,12 @@ void SP2::Render()
 	modelStack.PopMatrix();
 
 	RenderAsteroidField();
+
+	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
+	std::string s = std::to_string(framerate);
+	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 3, 5, 19);
+
+
 }
 
 //void SP2::Render()
@@ -597,4 +622,19 @@ void SP2::Exit()
 {
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
+}
+
+bool SP2::CheckCollision(AABB* SHAPE)
+{
+	Vector3 min = SHAPE->getmin();
+	Vector3 max = SHAPE->getmax();
+
+	if (camera.position.x > min.x && camera.position.x < max.x &&
+		camera.position.y > min.y && camera.position.y < max.y &&
+		camera.position.z > min.z && camera.position.z < max.z)
+	{
+		return true;
+	}
+	else
+		return false;
 }

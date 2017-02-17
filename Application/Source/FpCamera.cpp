@@ -2,6 +2,9 @@
 #include "Application.h"
 #include "Mtx44.h"
 
+#include <iostream>
+using std::cout;
+using std::endl;
 
 FpCamera::FpCamera()
 {
@@ -28,11 +31,12 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 void FpCamera::Update(double dt)
 {
 	static const float CAMERA_SPEED = 50.f;
-	Vector3 oripos = { 0, 20, 100 };
 
 	Vector3 view = (target - position).Normalized();
 	Vector3 right = view.Cross(up);
 	
+	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
+
 	if (Application::IsKeyPressed('A'))
 	{
 		position -= right;

@@ -1,5 +1,5 @@
-#ifndef FpCamera_H
-#define FpCamera_H
+#ifndef FIRSTPERSONCAM_H
+#define FIRSTPERSONCAM_H
 
 #include "Camera.h"
 
@@ -10,8 +10,6 @@ public:
 	//Vector3 position;
 	//Vector3 target;
 	//Vector3 up;
-
-
 
 	Vector3 defaultPosition;
 	Vector3 defaultTarget;

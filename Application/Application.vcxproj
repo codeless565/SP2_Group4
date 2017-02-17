@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AABB.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Asteroid.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
@@ -94,9 +95,11 @@
     <ClCompile Include="Source\SP2.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SpaceStation.cpp" />
+    <ClCompile Include="Source\TpCamera.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AABB.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\FpCamera.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SP2.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\TpCamera.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>

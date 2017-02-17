@@ -8,6 +8,7 @@
 #include "Light.h"
 #include "Material.h"
 #include <vector>
+#include "AABB.h"
 
 
 class SP2 : public Scene
@@ -97,6 +98,17 @@ class SP2 : public Scene
 		U_TOTAL,
 	};
 
+	enum AABB_TYPE
+	{
+		AABB_LEFT,
+		AABB_RIGHT,
+		AABB_FRONT,
+		AABB_BACK,
+		AABB_ENEMYSHIP,
+
+		NUM_AABB
+	};
+
 public:
 	SP2();
 	~SP2();
@@ -109,6 +121,7 @@ public:
 private:
 	unsigned m_vertexArrayID;
 	Mesh *meshList[NUM_GEOMETRY];
+	AABB *AABBList[NUM_AABB];
 
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
@@ -123,13 +136,8 @@ private:
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 
-	void InitAsteroidField();
-	void RenderAsteroidField();
-
-	void InitSpaceStation();
-	void UpdateSpaceStation(double dt);
-	void RenderSpaceStation();
-
+	bool CheckCollision(AABB* SHAPE);
+	
 	float rotateAngle;
 	float framerate;
 	float rotateskybox;
@@ -137,6 +145,10 @@ private:
 	//SpaceStation
 	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;
 
+	void InitSpaceStation();			//Initialize the SpaceStation
+	void UpdateSpaceStation(double dt);	//Animate the SpaceStation
+	void RenderSpaceStation();			//Render the SpaceStation
+	
 	//BattleShip
 	float BShipEngine;
 
@@ -144,8 +156,15 @@ private:
 	float PShipEngine, PShipRotateHori, PShipRotateVerti;
 
 	//Asteroids
-	void RNGAsteroidPos();
-	std::vector <Vector3> asteroids;
+	std::vector <Vector3> asteroids_Pos;		//asteroids position
+	std::vector <Vector3> asteroids_Rotation;	//asteroids rotation
+	unsigned int asteroids_amt;					//number of asteroids
+	bool hit;
+
+	void RNGAsteroidPos();		//generate asteroids
+	void InitAsteroidField();	//Initialize the Asteroid values
+	void RenderAsteroidField();	//Render the Asteroids
+	void CheckAsteroidCollision(); //Checks Collsion with Asteroid
 };
 
 #endif
