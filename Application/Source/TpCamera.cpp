@@ -36,7 +36,6 @@ void TpCamera::Update(double dt)
 	Vector3 right = view.Cross(up);
 
 	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
-
 	if (Application::IsKeyPressed('A'))
 	{
 		position -= right;

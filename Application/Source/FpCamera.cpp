@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Mtx44.h"
 
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -18,25 +19,48 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 {
 	this->position = defaultPosition = pos;
 	this->target = defaultTarget = target;
-	Vector3 view = (target - position).Normalized();
-	Vector3 right = view.Cross(up);
+	view = (target - position).Normalized();
+	right = view.Cross(up);
 	right.y = 0;
 	right.Normalize();
 	this->up = defaultUp = right.Cross(view).Normalized();
 
 	yaw = 0;
 	pitch = 0;
+	Accel = 0;
 }
-
+//THIS IS FOR PLAYER SHIP!!!
 void FpCamera::Update(double dt)
 {
 	static const float CAMERA_SPEED = 50.f;
 
-	Vector3 view = (target - position).Normalized();
-	Vector3 right = view.Cross(up);
+	view = (target - position).Normalized();
+	right = view.Cross(up);
 	
 	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
 
+	if (Accel >= 30)
+		Accel = 30;
+
+	if (Accel <= 0)
+		Accel = 0;
+
+		position += Accel * view;
+
+	if (Application::IsKeyPressed('W'))
+	{
+		position += Accel * view;
+		Accel += 0.1f;
+	}
+	else
+	{
+		Accel -= 0.2f;
+	}
+
+	if (Application::IsKeyPressed('S'))
+	{
+		position -= view;
+	}
 	if (Application::IsKeyPressed('A'))
 	{
 		position -= right;
@@ -45,17 +69,11 @@ void FpCamera::Update(double dt)
 	{
 		position += right;
 	}
-	if (Application::IsKeyPressed('W'))
-	{
-		position += view;
-	}
-	if (Application::IsKeyPressed('S'))
-	{
-		position -= view;
-	}
+
 	if (Application::IsKeyPressed(VK_LEFT))
 	{
 		yaw = (float)(CAMERA_SPEED * dt);
+//		yaw = PShipRotateHori / 10;
 		Mtx44 rotation;
 		rotation.SetToRotation(yaw, 0, 1, 0);
 		view = rotation * view;
@@ -64,6 +82,7 @@ void FpCamera::Update(double dt)
 	if (Application::IsKeyPressed(VK_RIGHT))
 	{
 		yaw = (float)(-CAMERA_SPEED * dt);
+//		yaw = PShipRotateHori / 10;
 		Mtx44 rotation;
 		rotation.SetToRotation(yaw, 0, 1, 0);
 		view = rotation * view;

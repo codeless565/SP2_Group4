@@ -144,13 +144,7 @@ void SP2::Init()
 
 	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
-		
-	//AABBList[AABB_LEFT] = new AABB({ -990, 0, 0 }, { 1000, 1000, 1000 });
-	//AABBList[AABB_RIGHT] = new AABB({ 990, 0, 0 }, { 1000, 1000, 1000 });
-	//AABBList[AABB_FRONT] = new AABB({ 0, 0, 990 }, { 1000, 1000, 1000 });
-	//AABBList[AABB_BACK] = new AABB({ 0, 0, -990 }, { 1000, 1000, 1000 });
-	//AABBList[AABB_ENEMYSHIP] = new AABB({ 0, 0, 100 }, { 20 *2,20,20 * 5 });
-	
+			
 	InitSpaceStation();
 	InitAsteroidField();
 
@@ -185,9 +179,8 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_LIGHT0_KL], light[0].kL);
 	glUniform1f(m_parameters[U_LIGHT0_KQ], light[0].kQ);
 
-
 	Mtx44 projection;
-	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 10000.f);
+	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 15000.f);
 	projectionStack.LoadMatrix(projection);
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
@@ -195,6 +188,7 @@ void SP2::Init()
 	BShipEngine = 0;
 	PShipRotateHori = 0;
 	PShipRotateVerti = 0;
+	PShipRoll = 0;
 }
 
 void SP2::Update(double dt)
@@ -203,7 +197,6 @@ void SP2::Update(double dt)
 	static float ROT_LIMIT = 45.f;
 	static float SCALE_LIMIT = 5.f;
 	static float door_transx = 1.f;
-
 
 	float LSPEED = 10.f;
 	if (Application::IsKeyPressed('1')) //enable back face culling
@@ -248,36 +241,47 @@ void SP2::Update(double dt)
 	//BattleShip
 	BShipEngine -= (float)(20 * dt);
 	//SpaceStation
+	UpdateSpaceStation(dt);
+
+	//player
 	if (Application::IsKeyPressed(VK_LEFT))
 	{
-		PShipRotateHori += (float)(50 * dt);
+		PShipRotateHori += (float)(camera.yaw);
+		//PShipRoll -= (float)(80 * dt);
 	}
+	
 	if (Application::IsKeyPressed(VK_RIGHT))
 	{
-		PShipRotateHori -= (float)(50 * dt);
+		PShipRotateHori += (float)(camera.yaw);
+		//PShipRoll += (float)(80 * dt);
 	}
-	if (Application::IsKeyPressed(VK_UP))
+	
+	if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
 	{
-		PShipRotateVerti -= (float)(50 * dt);
+		PShipRotateVerti -= (float)(camera.pitch);
 	}
-	if (Application::IsKeyPressed(VK_DOWN))
-	{
-		PShipRotateVerti += (float)(50 * dt);
-	}
-	//==
 
-	//for (int i = 0; i < sizeof(AABBList) / sizeof(int); i++)
+	//if (PShipRoll > 0)
 	//{
-	//	if (CheckCollision(AABBList[i]))
-	//	{
-	//		camera.Reset();
-	//	}
+	//	PShipRoll -= (float)(60 * dt);
 	//}
+	//else
+	//{
+	//	PShipRoll += (float)(60 * dt);
+	//}
+	//if (PShipRoll >= 50)
+	//	PShipRoll = 50;
+
+	//if (PShipRoll <= -50)
+	//	PShipRoll = -50;
 
 	CheckAsteroidCollision();
 
-	camera.Update(dt);
-	UpdateSpaceStation(dt);
+	if (!hit)
+	{
+		camera.Update(dt);
+	}
+
 }
 
 void SP2::Render()
@@ -326,9 +330,10 @@ void SP2::Render()
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
 	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
+	modelStack.Rotate(PShipRoll, 0, 0, 1);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -10, 10);
+		modelStack.Translate(0, -7, 13);
 		modelStack.Scale(5, 5, 5);
 		{
 			modelStack.PushMatrix();
@@ -373,8 +378,6 @@ void SP2::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
 	std::string s = std::to_string(framerate);
 	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 3, 5, 19);
-
-
 }
 
 //void SP2::Render()
@@ -498,48 +501,48 @@ void SP2::RenderSkybox()
 	modelStack.Rotate(rotateskybox, 0, 1, 0);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -2995);
+		modelStack.Translate(0, 0, -3995);
 		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_FRONT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 2995);
+		modelStack.Translate(0, 0, 3995);
 		modelStack.Rotate(180, 0, 0, 1);
 		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_BACK], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 2995, 0);
+		modelStack.Translate(0, 3995, 0);
 		modelStack.Rotate(180, 0, 1, 0);
 		modelStack.Rotate(180, 1, 0, 0);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_TOP], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -2995, 0);
+		modelStack.Translate(0, -3995, 0);
 		modelStack.Rotate(-180, 0, 1, 0);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_BOTTOM], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(-2995, 0, 0);
+		modelStack.Translate(-3995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_LEFT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(2995, 0, 0);
+		modelStack.Translate(3995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(90, 0, 0, 1);
-		modelStack.Scale(6000, 6000, 6000);
+		modelStack.Scale(8000, 8000, 8000);
 		RenderMesh(meshList[SPACE_RIGHT], false);
 		modelStack.PopMatrix();
 	}
@@ -622,19 +625,4 @@ void SP2::Exit()
 {
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);
-}
-
-bool SP2::CheckCollision(AABB* SHAPE)
-{
-	Vector3 min = SHAPE->getmin();
-	Vector3 max = SHAPE->getmax();
-
-	if (camera.position.x > min.x && camera.position.x < max.x &&
-		camera.position.y > min.y && camera.position.y < max.y &&
-		camera.position.z > min.z && camera.position.z < max.z)
-	{
-		return true;
-	}
-	else
-		return false;
 }

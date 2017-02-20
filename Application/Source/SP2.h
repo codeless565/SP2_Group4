@@ -98,17 +98,6 @@ class SP2 : public Scene
 		U_TOTAL,
 	};
 
-	enum AABB_TYPE
-	{
-		AABB_LEFT,
-		AABB_RIGHT,
-		AABB_FRONT,
-		AABB_BACK,
-		AABB_ENEMYSHIP,
-
-		NUM_AABB
-	};
-
 public:
 	SP2();
 	~SP2();
@@ -118,10 +107,10 @@ public:
 	virtual void Render();
 	virtual void Exit();
 
+
 private:
 	unsigned m_vertexArrayID;
 	Mesh *meshList[NUM_GEOMETRY];
-	AABB *AABBList[NUM_AABB];
 
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
@@ -135,8 +124,6 @@ private:
 	void RenderSkybox();
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
-
-	bool CheckCollision(AABB* SHAPE);
 	
 	float rotateAngle;
 	float framerate;
@@ -154,12 +141,15 @@ private:
 
 	//PlayerShip
 	float PShipEngine, PShipRotateHori, PShipRotateVerti;
+	float PShipRoll;
+	float PShipAccel;
 
 	//Asteroids
 	std::vector <Vector3> asteroids_Pos;		//asteroids position
 	std::vector <Vector3> asteroids_Rotation;	//asteroids rotation
 	unsigned int asteroids_amt;					//number of asteroids
 	bool hit;
+	int bouncechecktimer;
 
 	void RNGAsteroidPos();		//generate asteroids
 	void InitAsteroidField();	//Initialize the Asteroid values

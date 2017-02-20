@@ -3,22 +3,20 @@
 
 #include "Camera.h"
 
-
 class FpCamera : public Camera
 {
 public:
-	//Vector3 position;
-	//Vector3 target;
-	//Vector3 up;
-
 	Vector3 defaultPosition;
 	Vector3 defaultTarget;
 	Vector3 defaultUp;
 
 	Vector3 checkPos;
+	Vector3 view;
+	Vector3 right;
 
 	float yaw;
-	float pitch;
+	float pitch;	
+	float Accel;	//Ship Acceleration
 
 	FpCamera();
 	~FpCamera();

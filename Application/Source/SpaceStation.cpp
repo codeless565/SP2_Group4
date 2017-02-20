@@ -41,7 +41,7 @@ void SP2::UpdateSpaceStation(double dt)
 void SP2::RenderSpaceStation()
 {
 	modelStack.PushMatrix();
-	modelStack.Translate(1000, 10, 1000);
+	modelStack.Translate(1000, 10, 1700);
 	modelStack.Rotate(30, 0, 0, 1);
 	modelStack.Rotate(SSEntireRotate, 0, 1, 0);
 	modelStack.Scale(300, 300, 300);
