@@ -7,9 +7,11 @@
 #include "MatrixStack.h"
 #include "Light.h"
 #include "Material.h"
+
 #include <vector>
 #include "AABB.h"
 
+#include "Player.h"
 
 class SP2 : public Scene
 {
@@ -36,15 +38,22 @@ class SP2 : public Scene
 		TEST_MODEL3,
 		TEST_MODEL4,
 
-		//Ships
+		//Player
+		PLAYERSHIP_BODY,
+		PLAYERSHIP_ENGINE,
+		PLAYERSHIP_HUD_1,
+		PLAYERSHIP_HUD_2,
+		HUD_FRAME,
+		HUD_BAR,
+		HUD_COMPASS_N,
+		HUD_COMPASS_ARROW,
+
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
 		SPACESTATION_BOTTOM,
 		SPACESTATION_BODY,
-
-		PLAYERSHIP_BODY,
-		PLAYERSHIP_ENGINE,
-
+		
+		//Ships
 		BATTLESHIP_BODY,
 		BATTLESHIP_ENGINE,
 
@@ -121,6 +130,8 @@ private:
 
 	Light light[1];
 	void RenderMesh(Mesh *mesh, bool enableLight);
+	void RenderMeshOnScreen(Mesh* mesh, float rotZ, int sizeX, int sizeZ, int posX, int posY);
+	void RenderQuadOnScreen(Mesh* mesh, float x, float y, float sizex, float sizey);
 	void RenderSkybox();
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
@@ -128,6 +139,19 @@ private:
 	float rotateAngle;
 	float framerate;
 	float rotateskybox;
+
+	//PlayerShip
+	Player player;
+	float PShipEngine, PShipRotateHori, PShipRotateVerti;
+	float PShipRoll;
+	float PShipAccel;
+	float bounceT;
+	float Compass;
+	int fuelPercentage;
+
+	void InitShipHUD();
+	void UpdateShipHUD(double dt);
+	void RenderShipHUD();
 
 	//SpaceStation
 	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;
@@ -139,11 +163,6 @@ private:
 	//BattleShip
 	float BShipEngine;
 
-	//PlayerShip
-	float PShipEngine, PShipRotateHori, PShipRotateVerti;
-	float PShipRoll;
-	float PShipAccel;
-
 	//Asteroids
 	std::vector <Vector3> asteroids_Pos;		//asteroids position
 	std::vector <Vector3> asteroids_Rotation;	//asteroids rotation
@@ -154,7 +173,7 @@ private:
 	void RNGAsteroidPos();		//generate asteroids
 	void InitAsteroidField();	//Initialize the Asteroid values
 	void RenderAsteroidField();	//Render the Asteroids
-	void CheckAsteroidCollision(); //Checks Collsion with Asteroid
+	void CheckAsteroidCollision(int displacementX, int displacementY, int displacementZ); //Checks Collsion with Asteroid
 };
 
 #endif

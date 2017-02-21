@@ -127,7 +127,7 @@ void SP2::Init()
 
 	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
 	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
-	
+
 	// GENERAL USE
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
@@ -144,7 +144,8 @@ void SP2::Init()
 
 	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
-			
+
+	InitShipHUD();
 	InitSpaceStation();
 	InitAsteroidField();
 
@@ -184,6 +185,8 @@ void SP2::Init()
 	projectionStack.LoadMatrix(projection);
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+
+	player.InitPlayer(camera.position, 100, 5, 100, 100, 20);
 
 	BShipEngine = 0;
 	PShipRotateHori = 0;
@@ -242,24 +245,7 @@ void SP2::Update(double dt)
 	BShipEngine -= (float)(20 * dt);
 	//SpaceStation
 	UpdateSpaceStation(dt);
-
-	//player
-	if (Application::IsKeyPressed(VK_LEFT))
-	{
-		PShipRotateHori += (float)(camera.yaw);
-		//PShipRoll -= (float)(80 * dt);
-	}
-	
-	if (Application::IsKeyPressed(VK_RIGHT))
-	{
-		PShipRotateHori += (float)(camera.yaw);
-		//PShipRoll += (float)(80 * dt);
-	}
-	
-	if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-	{
-		PShipRotateVerti -= (float)(camera.pitch);
-	}
+	UpdateShipHUD(dt);
 
 	//if (PShipRoll > 0)
 	//{
@@ -275,13 +261,58 @@ void SP2::Update(double dt)
 	//if (PShipRoll <= -50)
 	//	PShipRoll = -50;
 
-	CheckAsteroidCollision();
+	CheckAsteroidCollision(0, -7, 13);
 
 	if (!hit)
 	{
 		camera.Update(dt);
-	}
+		player.setPos(camera.position);
 
+		//player
+		if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
+		{
+			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+			{
+			}
+			else
+			{
+				PShipRotateHori += (float)(camera.yaw);
+				//PShipRoll -= (float)(80 * dt);
+			}
+		}
+		else if (Application::IsKeyPressed(VK_RIGHT) && !Application::IsKeyPressed(VK_LEFT))
+		{
+			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+			{
+			}
+			else
+			{
+				PShipRotateHori += (float)(camera.yaw);
+				//PShipRoll += (float)(80 * dt);
+			}
+		}
+
+		if (Application::IsKeyPressed(VK_UP) && !Application::IsKeyPressed(VK_DOWN))
+		{
+			if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+			{
+			}
+			else
+			{
+				PShipRotateVerti -= (float)(camera.pitch);
+			}
+		}
+		else if (!Application::IsKeyPressed(VK_UP) && Application::IsKeyPressed(VK_DOWN))
+		{
+			if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+			{
+			}
+			else
+			{
+				PShipRotateVerti -= (float)(camera.pitch);
+			}
+		}
+	}
 }
 
 void SP2::Render()
@@ -322,15 +353,12 @@ void SP2::Render()
 	RenderSkybox();
 	RenderMesh(meshList[GEO_AXES], false);
 
-	// Space Station
-	RenderSpaceStation();
-
 	// PlayerShip
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Translate(player.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(PShipRoll, 0, 0, 1);
 	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
 	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
-	modelStack.Rotate(PShipRoll, 0, 0, 1);
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(0, -7, 13);
@@ -347,6 +375,9 @@ void SP2::Render()
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
+
+	// Space Station
+	RenderSpaceStation();
 
 	// BattleShip
 	modelStack.PushMatrix();
@@ -375,9 +406,11 @@ void SP2::Render()
 
 	RenderAsteroidField();
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
+	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
 	std::string s = std::to_string(framerate);
-	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 3, 5, 19);
+	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 2, 5, 0);
+
+	RenderShipHUD();
 }
 
 //void SP2::Render()
@@ -452,6 +485,60 @@ void SP2::Render()
 //	
 //}
 
+void SP2::RenderSkybox()
+{
+	modelStack.PushMatrix();
+	modelStack.Rotate(rotateskybox, 0, 1, 0);
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 0, -4995);
+		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_FRONT], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 0, 4995);
+		modelStack.Rotate(180, 0, 0, 1);
+		modelStack.Rotate(-90, 1, 0, 0);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_BACK], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, 4995, 0);
+		modelStack.Rotate(180, 0, 1, 0);
+		modelStack.Rotate(180, 1, 0, 0);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_TOP], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, -4995, 0);
+		modelStack.Rotate(-180, 0, 1, 0);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_BOTTOM], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(-4995, 0, 0);
+		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Rotate(-90, 0, 0, 1);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_LEFT], false);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(4995, 0, 0);
+		modelStack.Rotate(90, 1, 0, 0);
+		modelStack.Rotate(90, 0, 0, 1);
+		modelStack.Scale(10000, 10000, 10000);
+		RenderMesh(meshList[SPACE_RIGHT], false);
+		modelStack.PopMatrix();
+	}
+	modelStack.PopMatrix();
+}
+
 void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
@@ -495,58 +582,49 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 	}
 }
 
-void SP2::RenderSkybox()
+void SP2::RenderMeshOnScreen(Mesh* mesh, float rotZ, int sizeX, int sizeZ, int posX, int posY)
 {
+	glDisable(GL_DEPTH_TEST);
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
 	modelStack.PushMatrix();
-	modelStack.Rotate(rotateskybox, 0, 1, 0);
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -3995);
-		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_FRONT], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 3995);
-		modelStack.Rotate(180, 0, 0, 1);
-		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_BACK], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, 3995, 0);
-		modelStack.Rotate(180, 0, 1, 0);
-		modelStack.Rotate(180, 1, 0, 0);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_TOP], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, -3995, 0);
-		modelStack.Rotate(-180, 0, 1, 0);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_BOTTOM], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(-3995, 0, 0);
-		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_LEFT], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(3995, 0, 0);
-		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Rotate(90, 0, 0, 1);
-		modelStack.Scale(8000, 8000, 8000);
-		RenderMesh(meshList[SPACE_RIGHT], false);
-		modelStack.PopMatrix();
-	}
+	modelStack.LoadIdentity();
+	//to do: scale and translate accordingly
+	modelStack.Translate(posX, posY, 0);
+	modelStack.Rotate(rotZ, 0, 0, 1);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(sizeX, 0, sizeZ);
+	RenderMesh(mesh, false); //UI should not have light
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
 	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
+}
+
+void SP2::RenderQuadOnScreen(Mesh* mesh, float sizex, float sizey, float x, float y)
+{
+	glDisable(GL_DEPTH_TEST);
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+	//to do: scale and translate accordingly
+	modelStack.Translate(x, y, 0);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(sizex, 0, sizey);
+	RenderMesh(mesh, false); //UI should not have light
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void SP2::RenderText(Mesh* mesh, std::string text, Color color)
