@@ -2,12 +2,8 @@
 
 #include "GL\glew.h"
 
-#include "shader.hpp"
-#include "Mtx44.h"
-
 #include "Application.h"
 #include "MeshBuilder.h"
-#include "Utility.h"
 #include "LoadTGA.h"
 
 
@@ -29,8 +25,8 @@ void SP2::InitAsteroidField()
 	
 	asteroids_amt = 400; //keep below 400
 	hit = false;
-	RNGAsteroidPos();
 	bouncechecktimer = 0;
+	RNGAsteroidPos();
 }
 
 void SP2::RenderAsteroidField()
@@ -133,11 +129,11 @@ void SP2::RNGAsteroidPos()
 	}
 }
 
-void SP2::CheckAsteroidCollision()
+void SP2::CheckAsteroidCollision(int displacementX, int displacementY, int displacementZ)
 {
-	int x = camera.position.x;
-	int y = camera.position.y - 7;
-	int z = camera.position.z + 13;
+	int x = camera.position.x + displacementX;
+	int y = camera.position.y + displacementY;
+	int z = camera.position.z + displacementZ;
 
 	Vector3 plane_pos(x, y, z);
 
