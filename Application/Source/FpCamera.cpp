@@ -27,23 +27,23 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 
 	yaw = 0;
 	pitch = 0;
-	Accel = 0;
+	Accel = 0.5;
 }
 //THIS IS FOR PLAYER SHIP!!!
 void FpCamera::Update(double dt)
 {
-	static const float CAMERA_SPEED = 50.f;
+	static const float CAMERA_SPEED = 60.f;
 
 	view = (target - position).Normalized();
 	right = view.Cross(up);
 	
 	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
 
-	if (Accel >= 30)
-		Accel = 30;
+	if (Accel >= 10)
+		Accel = 10;
 
-	if (Accel <= 0)
-		Accel = 0;
+	if (Accel <= 0.2f)
+		Accel = 0.2f;
 
 		position += Accel * view;
 
@@ -72,50 +72,66 @@ void FpCamera::Update(double dt)
 
 	if (Application::IsKeyPressed(VK_LEFT))
 	{
-		yaw = (float)(CAMERA_SPEED * dt);
-//		yaw = PShipRotateHori / 10;
-		Mtx44 rotation;
-		rotation.SetToRotation(yaw, 0, 1, 0);
-		view = rotation * view;
-		up = rotation * up;
+		if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+		{
+		}
+		else
+		{
+
+			yaw = (float)(CAMERA_SPEED * dt);
+			Mtx44 rotation;
+			rotation.SetToRotation(yaw, 0, 1, 0);
+			view = rotation * view;
+			up = rotation * up;
+		}
 	}
 	if (Application::IsKeyPressed(VK_RIGHT))
 	{
-		yaw = (float)(-CAMERA_SPEED * dt);
-//		yaw = PShipRotateHori / 10;
-		Mtx44 rotation;
-		rotation.SetToRotation(yaw, 0, 1, 0);
-		view = rotation * view;
-		up = rotation * up;
+		if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+		{
+		}
+		else
+		{
+			yaw = (float)(-CAMERA_SPEED * dt);
+			Mtx44 rotation;
+			rotation.SetToRotation(yaw, 0, 1, 0);
+			view = rotation * view;
+			up = rotation * up;
+		}
 	}
 	if (Application::IsKeyPressed(VK_UP))
 	{
-		pitch = (float)(CAMERA_SPEED * dt);
-		right.y = 0;
-		right.Normalize();
-		up = right.Cross(view).Normalized();
+		if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+		{
+		}
+		else
+		{
+			pitch = (float)(CAMERA_SPEED * dt);
+			right.y = 0;
+			right.Normalize();
+			up = right.Cross(view).Normalized();
 
-		Mtx44 rotation;
-		rotation.SetToRotation(pitch, right.x, right.y, right.z);
-
-		//if (view.y >= 0.8f)	//camera lock so cannot 360 head tilt
-		//	view.y = 0.8f;
-		view = rotation * view;
+			Mtx44 rotation;
+			rotation.SetToRotation(pitch, right.x, right.y, right.z);
+			view = rotation * view;
+		}
 	}
 	if (Application::IsKeyPressed(VK_DOWN))
 	{
-		pitch = (float)(-CAMERA_SPEED * dt);
-		right.y = 0;
-		right.Normalize();
-		up = right.Cross(view).Normalized();
+		if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+		{
+		}
+		else
+		{
+			pitch = (float)(-CAMERA_SPEED * dt);
+			right.y = 0;
+			right.Normalize();
+			up = right.Cross(view).Normalized();
 
-		Mtx44 rotation;
-		rotation.SetToRotation(pitch, right.x, right.y, right.z);
-		
-		//if (view.y <= -0.8f)	//camera lock so cannot 360 head tilt
-		//	view.y = -0.8f;
-
-		view = rotation * view;
+			Mtx44 rotation;
+			rotation.SetToRotation(pitch, right.x, right.y, right.z);
+			view = rotation * view;
+		}
 	}
 
 	target = position + view;
@@ -136,10 +152,10 @@ void FpCamera::Update(double dt)
 	}
 
 
-	if (Application::IsKeyPressed('R'))
-	{
-		Reset();
-	}
+	//if (Application::IsKeyPressed('R'))
+	//{
+	//	Reset();
+	//}
 }
 
 void FpCamera::Reset()
