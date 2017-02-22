@@ -57,6 +57,10 @@ struct Vector3
 	float Dot( const Vector3& rhs ) const; //Dot product
 	Vector3 Cross( const Vector3& rhs ) const; //Cross product
 	
+	//Edited by PS
+	float XZDot(const Vector3& rhs) const; //X and ZDot product
+	float XZLength(void) const; //Get magnitude betwwen X and Z plane
+
 	//Return a copy of this vector, normalized
 	//Throw a divide by zero exception if normalizing a zero vector
 	Vector3 Normalized( void ) const throw( DivideByZero );

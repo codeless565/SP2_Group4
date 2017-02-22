@@ -275,6 +275,11 @@ float Vector3::Length( void ) const
   return sqrt(x * x + y * y + z * z);
 }
 
+float Vector3::XZLength(void) const
+{
+	return sqrt(x * x + z * z);
+}
+
 /******************************************************************************/
 /*!
 \brief
@@ -303,6 +308,11 @@ Dot product of 2 vectors
 float Vector3::Dot( const Vector3& rhs ) const
 {
 	return x * rhs.x + y * rhs.y + z * rhs.z;
+}
+
+float Vector3::XZDot(const Vector3& rhs) const
+{
+	return x * rhs.x + z * rhs.z;
 }
 
 /******************************************************************************/
