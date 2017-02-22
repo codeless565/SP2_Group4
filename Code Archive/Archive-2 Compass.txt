@@ -1,0 +1,9 @@
+float Player_Target = camera.view.XZDot(Target);
+float Player_Target_Length = camera.view.XZLength()*Target.XZLength();
+
+Compass = Math::RadianToDegree(acos(Player_Target / Player_Target_Length));
+
+float Compass2 = Math::DegreeToRadian(Compass);
+
+if (camera.view.z >=0)
+		Compass *= -1;
