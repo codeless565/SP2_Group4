@@ -16,16 +16,20 @@ public:
 
 	float yaw;
 	float pitch;	
-	float Accel;	//Ship Acceleration
+	float accel;	//Ship Acceleration
+	float currSpeed;//Ship current speed
+	float maxSpeed; //maximum speed the ship can accelerate to
+	bool boost;		//boost enabled?
 
 	FpCamera();
 	~FpCamera();
 	virtual void Init(const Vector3& pos, const Vector3& target, const Vector3& up);
-	virtual void Update(double dt);
+	virtual void Update(double dt , bool boost);
 	virtual void Reset();
 
 
 	bool obstruction(Vector3 min, Vector3 max);
+
 
 };
 

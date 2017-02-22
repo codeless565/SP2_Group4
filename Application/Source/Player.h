@@ -6,21 +6,25 @@
 class Player
 {
 private:
-
+	
 	
 public:	
 	Vector3 position; //Position
 	int health; // HP hitPoints
 	int damage; // DMG dealt
-	int energy; // 
-	int fuel;   // fuel
-	int speed;	
+	float energy; // 
+	float fuel;   // fuel
+	float speed;	
 
 	Player();
 	Player(Vector3 pos, int hp, int dmg, int ey, int oil, int sp);
 	~Player();
 
 	void InitPlayer(Vector3 pos, int hp, int dmg, int ey, int oil, int sp);
+	void ship_idling();
+	void ship_boosting();
+	bool boostable();
+	bool isDead();
 
 	//Getter
 	Vector3 getPos();

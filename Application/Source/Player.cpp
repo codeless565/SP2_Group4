@@ -26,6 +26,34 @@ void Player::InitPlayer(Vector3 pos, int hp, int dmg, int ey, int oil, int sp)
 	fuel = oil;
 	speed = sp;
 }
+void Player::ship_idling()
+{
+	if (fuel < 100)
+	{
+		fuel += 0.5f;
+	}
+}
+void Player::ship_boosting()
+{
+	if (fuel != (fuel <= 0))
+		fuel--;
+}
+bool Player::boostable()
+{
+	if (fuel <= 0)
+		return false;
+	else
+		return true;
+}
+
+
+bool Player::isDead()
+{
+	if (health <= 0)
+		return true;
+	else
+		return false;
+}
 
 Vector3 Player::getPos()
 {

@@ -27,34 +27,59 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 
 	yaw = 0;
 	pitch = 0;
-	Accel = 0.5;
+	accel = 0;
+	currSpeed = 0.2f;
+	maxSpeed = 10.f;
+	this->boost = false;
 }
 //THIS IS FOR PLAYER SHIP!!!
-void FpCamera::Update(double dt)
+void FpCamera::Update(double dt, bool boost)
 {
 	static const float CAMERA_SPEED = 60.f;
 
 	view = (target - position).Normalized();
 	right = view.Cross(up);
 	
-	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
-
-	if (Accel >= 10)
-		Accel = 10;
-
-	if (Accel <= 0.2f)
-		Accel = 0.2f;
-
-		position += Accel * view;
-
-	if (Application::IsKeyPressed('W'))
+	//cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
+	//cout << "speed: " << currSpeed << " accel: " << accel << endl;
+	
+	//Acceleration
+	if (Application::IsKeyPressed(VK_SPACE) && Application::IsKeyPressed('W') && boost)
 	{
-		position += Accel * view;
-		Accel += 0.1f;
+		this->boost = true;
+	}
+	else
+		this->boost = false;
+
+	if (this->boost)	//if boost is enabled, maximum speed and acceleration increases
+	{
+		maxSpeed = 30.f;
+		accel = 1.5f;
 	}
 	else
 	{
-		Accel -= 0.2f;
+		maxSpeed = 10.f;
+		accel = 0.5f;
+	}
+
+
+	if (currSpeed >= maxSpeed)
+		currSpeed = maxSpeed;
+
+	if (currSpeed <= 0.2f)
+		currSpeed = 0.2f;
+	//=================
+
+	position += currSpeed * view;
+
+	if (Application::IsKeyPressed('W'))
+	{
+		position += currSpeed * view;
+		currSpeed += accel;
+	}
+	else
+	{
+		currSpeed -= 0.2f;
 	}
 
 	if (Application::IsKeyPressed('S'))
