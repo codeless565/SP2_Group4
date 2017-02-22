@@ -30,8 +30,6 @@ class SP2 : public Scene
 
 		//LIGHT
 
-		TEXT,
-
 		//SP Model
 		TEST_MODEL,
 		TEST_MODEL2,
@@ -43,10 +41,12 @@ class SP2 : public Scene
 		PLAYERSHIP_ENGINE,
 		PLAYERSHIP_HUD_1,
 		PLAYERSHIP_HUD_2,
-		HUD_FRAME,
+		HUD_FUELFRAME,
+		HUD_ENERGYFRAME,
 		HUD_BAR,
 		HUD_COMPASS_N,
 		HUD_COMPASS_ARROW,
+		HUD_HP,
 
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
@@ -69,9 +69,6 @@ class SP2 : public Scene
 		//TEXT
 		GEO_TEXT,
 		GEO_TEXT2,
-		GEO_TEXTx,
-		GEO_TEXTy,
-		GEO_TEXTz,
 
 		// actions
 
@@ -148,10 +145,15 @@ private:
 	float bounceT;
 	float Compass;
 	int fuelPercentage;
+	std::string fuel;
+	std::vector <Vector3> health;
 
 	void InitShipHUD();
 	void UpdateShipHUD(double dt);
 	void RenderShipHUD();
+
+	//Target location
+	Vector3 Target;
 
 	//SpaceStation
 	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;

@@ -89,15 +89,12 @@ void SP2::Init()
 	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
 	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
-	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
 	meshList[SPACE_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1));
 	meshList[SPACE_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
 
 	meshList[SPACE_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1));
 	meshList[SPACE_BACK]->textureID = LoadTGA("Image//SpaceBack.tga");
-
+	
 	meshList[SPACE_LEFT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1));
 	meshList[SPACE_LEFT]->textureID = LoadTGA("Image//SpaceLeft.tga");
 
@@ -130,24 +127,15 @@ void SP2::Init()
 
 	// GENERAL USE
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
+	meshList[GEO_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
 
 	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//testfont.tga");
-
-	// coordinate text
-	meshList[GEO_TEXTx] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTx]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_TEXTy] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTy]->textureID = LoadTGA("Image//testfont.tga");
-
-	meshList[GEO_TEXTz] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXTz]->textureID = LoadTGA("Image//testfont.tga");
+	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//BNMachine.tga");
 
 	InitShipHUD();
 	InitSpaceStation();
 	InitAsteroidField();
+
 
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
@@ -245,7 +233,6 @@ void SP2::Update(double dt)
 	BShipEngine -= (float)(20 * dt);
 	//SpaceStation
 	UpdateSpaceStation(dt);
-	UpdateShipHUD(dt);
 
 	//if (PShipRoll > 0)
 	//{
@@ -263,9 +250,10 @@ void SP2::Update(double dt)
 
 	CheckAsteroidCollision(0, -7, 13);
 
-	if (!hit)
+	if (!player.isDead())
 	{
-		camera.Update(dt);
+		UpdateShipHUD(dt);
+		camera.Update(dt, player.boostable());
 		player.setPos(camera.position);
 
 		//player
@@ -355,7 +343,7 @@ void SP2::Render()
 
 	// PlayerShip
 	modelStack.PushMatrix();
-	modelStack.Translate(player.position.x, camera.position.y, camera.position.z);
+	modelStack.Translate(camera.target.x, camera.target.y, camera.target.z);
 	modelStack.Rotate(PShipRoll, 0, 0, 1);
 	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
 	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
@@ -406,9 +394,9 @@ void SP2::Render()
 
 	RenderAsteroidField();
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
+	RenderTextOnScreen(meshList[GEO_TEXT2], "FPS", Color(0, 1, 0), 2, 0, 0);
 	std::string s = std::to_string(framerate);
-	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 2, 5, 0);
+	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 2, 3.5f, 0);
 
 	RenderShipHUD();
 }
@@ -491,48 +479,48 @@ void SP2::RenderSkybox()
 	modelStack.Rotate(rotateskybox, 0, 1, 0);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -4995);
+		modelStack.Translate(0, 0, -5995);
 		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_FRONT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 4995);
+		modelStack.Translate(0, 0, 5995);
 		modelStack.Rotate(180, 0, 0, 1);
 		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_BACK], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 4995, 0);
+		modelStack.Translate(0, 5995, 0);
 		modelStack.Rotate(180, 0, 1, 0);
 		modelStack.Rotate(180, 1, 0, 0);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_TOP], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -4995, 0);
+		modelStack.Translate(0, -5995, 0);
 		modelStack.Rotate(-180, 0, 1, 0);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_BOTTOM], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(-4995, 0, 0);
+		modelStack.Translate(-5995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_LEFT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(4995, 0, 0);
+		modelStack.Translate(5995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(90, 0, 0, 1);
-		modelStack.Scale(10000, 10000, 10000);
+		modelStack.Scale(12000, 12000, 12000);
 		RenderMesh(meshList[SPACE_RIGHT], false);
 		modelStack.PopMatrix();
 	}
