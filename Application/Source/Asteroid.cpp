@@ -23,9 +23,9 @@ void SP2::InitAsteroidField()
 	meshList[ASTEROID2] = MeshBuilder::GenerateOBJ("Asteroid2", "OBJ//Asteroid2.obj");
 	meshList[ASTEROID2]->textureID = LoadTGA("Image//Asteroid_red.tga");
 	
-	asteroids_amt = 400; //keep below 400
+	asteroids_amt = 800; //keep below 400
 	hit = false;
-	bouncechecktimer = 0;
+	bouncechecktimer = 100;
 	RNGAsteroidPos();
 }
 
@@ -77,7 +77,7 @@ void SP2::RenderAsteroidField()
 
 	if (hit == true)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], "HIT", Color(0, 1, 0), 6, 5, 4);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "HIT", Color(0, 1, 0), 6, 5, 4);
 	}
 }
 
@@ -89,28 +89,28 @@ void SP2::RNGAsteroidPos()
 	//translation
 	for (int i = 0; i < asteroids_amt/2; i++)
 	{
-		x = (rand() % 25 + 1) * -100;	//x ranged from 1 to 20
+		x = (rand() % 34 + 1) * -100;	//x ranged from 1 to 20
 		
 		if (i % 2 == 0)
-			y = (rand() % 4 + 1) * 100;		//y ranged from 1 to 4
+			y = (rand() % 8 + 1) * 100;		//y ranged from 1 to 4
 		else
-			y = (rand() % 4 + 1) * -150;	//y ranged from -1 to -4
+			y = (rand() % 8 + 1) * -150;	//y ranged from -1 to -4
 
-		z = (rand() % 8 + 1) * -150;		//z ranged from 1 to 8
+		z = (rand() % 18 + 1) * -150;		//z ranged from 1 to 8
 		cout << x << ' ' << y << ' ' << z << endl;
 
 		asteroids_Pos.push_back(Vector3(x, y, z)); //set the position into a vector3 which will be then pushed into vector array
 	}
 	for (int i = asteroids_amt/2; i < asteroids_amt; i++)
 	{
-		x = (rand() % 25 + 1) * 100;	//x ranged from 1 to 20
+		x = (rand() % 34 + 1) * 100;	//x ranged from 1 to 20
 
 		if (i % 2 == 0)
-			y = (rand() % 4 + 1) * 100;		//y ranged from 1 to 4
+			y = (rand() % 8 + 1) * 100;		//y ranged from 1 to 4
 		else
-			y = (rand() % 4 + 1) * -150;	//y ranged from -1 to -4
+			y = (rand() % 8 + 1) * -150;	//y ranged from -1 to -4
 
-		z = (rand() % 8 + 1) * -150;		//z ranged from 1 to 8
+		z = (rand() % 18 + 1) * -150;		//z ranged from 1 to 8
 		cout << x << ' ' << y << ' ' << z << endl;
 
 		asteroids_Pos.push_back(Vector3(x, y, z)); //set the position into a vector3 which will be then pushed into vector array
@@ -148,11 +148,19 @@ void SP2::CheckAsteroidCollision(int displacementX, int displacementY, int displ
 			bouncechecktimer = 0;
 		}
 	}
-	if (hit && bouncechecktimer >= 5)
+
+	if (hit)
 	{
+		player.health -= 10;
+
 		hit = false;
-		bouncechecktimer = 0;
 	}
+
+	//if (hit && bouncechecktimer >= 5)
+	//{
+	//	hit = false;
+	//	bouncechecktimer = 0;
+	//}
 
 	bouncechecktimer++;
 }
