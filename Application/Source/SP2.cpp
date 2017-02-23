@@ -70,14 +70,9 @@ void SP2::Init()
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
-
-
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
 	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
-
-	//variable to rotate geometry
-	rotateAngle = 0;
 
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
@@ -169,12 +164,13 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_LIGHT0_KQ], light[0].kQ);
 
 	Mtx44 projection;
-	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 15000.f);
+	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 50000.f);
 	projectionStack.LoadMatrix(projection);
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
 	playership.InitPlayerShip(camera.position, 100, 5, 100, 100, 20);
+	playership.InitAOZone({ -5000, -5000, -5000 }, { 5000, 5000, 5000 });
 
 	BShipEngine = 0;
 	PShipRotateHori = 0;
@@ -185,9 +181,6 @@ void SP2::Init()
 void SP2::Update(double dt)
 {
 	framerate = 1 / dt;
-	static float ROT_LIMIT = 45.f;
-	static float SCALE_LIMIT = 5.f;
-	static float door_transx = 1.f;
 
 	float LSPEED = 10.f;
 	if (Application::IsKeyPressed('1')) //enable back face culling
@@ -233,6 +226,7 @@ void SP2::Update(double dt)
 	BShipEngine -= (float)(20 * dt);
 	//SpaceStation
 	UpdateSpaceStation(dt);
+	UpdateAsteroidField(dt);
 
 	//if (PShipRoll > 0)
 	//{
@@ -248,7 +242,7 @@ void SP2::Update(double dt)
 	//if (PShipRoll <= -50)
 	//	PShipRoll = -50;
 
-	CheckAsteroidCollision(0, -7, 13);
+	CheckAsteroidCollision();
 
 	if (!playership.isDead())
 	{
@@ -476,51 +470,50 @@ void SP2::Render()
 void SP2::RenderSkybox()
 {
 	modelStack.PushMatrix();
-	modelStack.Rotate(rotateskybox, 0, 1, 0);
 	{
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, -5995);
+		modelStack.Translate(0, 0, -9995);
 		modelStack.Rotate(90, 1, 0, 0);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_FRONT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 0, 5995);
+		modelStack.Translate(0, 0, 9995);
 		modelStack.Rotate(180, 0, 0, 1);
 		modelStack.Rotate(-90, 1, 0, 0);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_BACK], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, 5995, 0);
+		modelStack.Translate(0, 9995, 0);
 		modelStack.Rotate(180, 0, 1, 0);
 		modelStack.Rotate(180, 1, 0, 0);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_TOP], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -5995, 0);
+		modelStack.Translate(0, -9995, 0);
 		modelStack.Rotate(-180, 0, 1, 0);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_BOTTOM], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(-5995, 0, 0);
+		modelStack.Translate(-9995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(-90, 0, 0, 1);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_LEFT], false);
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
-		modelStack.Translate(5995, 0, 0);
+		modelStack.Translate(9995, 0, 0);
 		modelStack.Rotate(90, 1, 0, 0);
 		modelStack.Rotate(90, 0, 0, 1);
-		modelStack.Scale(12000, 12000, 12000);
+		modelStack.Scale(20000, 20000, 20000);
 		RenderMesh(meshList[SPACE_RIGHT], false);
 		modelStack.PopMatrix();
 	}
