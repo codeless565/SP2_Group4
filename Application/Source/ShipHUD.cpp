@@ -33,7 +33,10 @@ void SP2::InitShipHUD()
 
 	meshList[HUD_COMPASS_ARROW] = MeshBuilder::GenerateQuad("HUD_Compass_Arrow", Color(1, 1, 1));
 	meshList[HUD_COMPASS_ARROW]->textureID = LoadTGA("Image//Compass_Arrow.tga");
-	
+
+	meshList[HUD_ZONEOUT] = MeshBuilder::GenerateQuad("HUD_ZoneOut", Color(1, 1, 1));
+	meshList[HUD_ZONEOUT]->textureID = LoadTGA("Image//Ship_ZoneOut.tga");
+
 	//init health
 	for (int i = 0; i < 10; i++)
 	{
@@ -52,6 +55,7 @@ void SP2::InitShipHUD()
 	}
 
 	bounceT = 0;
+	zoneOutTime = playership.zoneOutTime() * 60;
 	Compass = 0;
 	Target = { 4000, 0, 30 };
 
@@ -69,7 +73,7 @@ void SP2::UpdateShipHUD(double dt)
 
 	//fuel Count
 	playership.ship_idling();
-
+	
 	if (camera.boost)
 		playership.ship_boosting();
 
@@ -79,6 +83,16 @@ void SP2::UpdateShipHUD(double dt)
 
 	//cout << "Compass: " << Compass << "Cam view: " << camera.view << endl;
 	
+	//zoneOut
+	if (playership.isZoneOut(zoneOutTime))
+		zoneOutTime--;
+	else
+		zoneOutTime = playership.zoneOutTime() * (1/dt);
+
+	int zt = zoneOutTime / (1 / dt);
+	zt1 = std::to_string(zt);
+	
+	bounceT++;
 }
 
 void SP2::RenderShipHUD()
@@ -110,16 +124,25 @@ void SP2::RenderShipHUD()
 	for (float i = 0; i < playership.health / 10; i++)
 		 RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);
 	
-	if (playership.health >= 50 && player.health <= 100 && bouncechecktimer <= 50)
+	if (playership.health >= 50 && playership.health <= 100 && bouncechecktimer <= 50)
 		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Damaged", Color(1, 0, 0), 2, 27.5f, 2.f);
-	if (playership.health > 20 && player.health < 50 && bouncechecktimer <= 100 && bouncechecktimer % 15 != 0)
+	if (playership.health > 20 && playership.health < 50 && bouncechecktimer <= 100 && bouncechecktimer % 15 != 0)
 		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Critical", Color(1, 0, 0), 2, 27.5f, 2.f);
-	if (playership.health > 0 && player.health <= 20 && bouncechecktimer % 10 != 0)
+	if (playership.health > 0 && playership.health <= 20 && bouncechecktimer % 10 != 0)
 			RenderTextOnScreen(meshList[GEO_TEXT2], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
-	//dead
-	if (player.isDead())
+	//zone out
+	if (playership.isZoneOut(zoneOutTime))
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "You are dead", Color(1, 0, 0), 6, 0.7f, 4.5f);
+		RenderQuadOnScreen(meshList[HUD_ZONEOUT], 100, 100, 40, 30);
+		if (bouncechecktimer % 22 != 0)
+		{
+			RenderTextOnScreen(meshList[GEO_TEXT2], "Return to Mission Area!", Color(1, 0, 0), 3, 2.3f, 10.f);
+		}
+		RenderTextOnScreen(meshList[GEO_TEXT2], zt1 , Color(1, 0, 0), 3, 2.3f, 5.f);
 	}
-
+	//dead
+	if (playership.isDead())
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT2], "You are dead", Color(1, 0, 0), 6, 1.f, 4.5f);
+	}
 }

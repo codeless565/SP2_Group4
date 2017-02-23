@@ -6,26 +6,31 @@
 class PlayerShip
 {
 private:
+	bool dead;
+	bool fuel_depleted; 
+	float speed;		
 	
-	
+	Vector3 maxAOZone;
+	Vector3 minAOZone;
+
 public:	
 	Vector3 position;	// Position
 	int health;			// HP hitPoints
 	int damage;			// DMG dealt
 	float energy;		// Ammo
 	float fuel;			// Fuel
-	float speed;		
-	bool fuel_depleted; 
 
 	PlayerShip();
 	PlayerShip(Vector3 pos, int hp, int dmg, int ey, int oil, int sp);
 	~PlayerShip();
 
 	void InitPlayerShip(Vector3 pos, int hp, int dmg, int ey, int oil, int sp);
+	void InitAOZone(Vector3 min, Vector3 max);
 	void ship_idling();
 	void ship_boosting();
 	void fuel_depletion();
 	bool boostable();
+	bool isZoneOut(float zt);
 	bool isDead();
 
 	//Getter
@@ -35,6 +40,7 @@ public:
 	int getEnergy();
 	int getFuel();
 	int getSpeed();
+	int zoneOutTime();
 	//Setter
 	void setPos(Vector3);
 	void setHealth(int hp);
