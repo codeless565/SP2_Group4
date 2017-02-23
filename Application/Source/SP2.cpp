@@ -174,7 +174,7 @@ void SP2::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
-	player.InitPlayer(camera.position, 100, 5, 100, 100, 20);
+	playership.InitPlayerShip(camera.position, 100, 5, 100, 100, 20);
 
 	BShipEngine = 0;
 	PShipRotateHori = 0;
@@ -250,11 +250,11 @@ void SP2::Update(double dt)
 
 	CheckAsteroidCollision(0, -7, 13);
 
-	if (!player.isDead())
+	if (!playership.isDead())
 	{
 		UpdateShipHUD(dt);
-		camera.Update(dt, player.boostable());
-		player.setPos(camera.position);
+		camera.Update(dt, playership.boostable());
+		playership.setPos(camera.position);
 
 		//player
 		if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))

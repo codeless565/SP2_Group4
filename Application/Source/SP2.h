@@ -11,7 +11,7 @@
 #include <vector>
 #include "AABB.h"
 
-#include "Player.h"
+#include "PlayerShip.h"
 
 class SP2 : public Scene
 {
@@ -138,7 +138,7 @@ private:
 	float rotateskybox;
 
 	//PlayerShip
-	Player player;
+	PlayerShip playership;
 	float PShipEngine, PShipRotateHori, PShipRotateVerti;
 	float PShipRoll;
 	float PShipAccel;

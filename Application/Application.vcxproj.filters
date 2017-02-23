@@ -44,9 +44,6 @@
     <ClCompile Include="Source\SP2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FpCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Asteroid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,10 +56,13 @@
     <ClCompile Include="Source\TpCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Player.cpp">
+    <ClCompile Include="Source\ShipHUD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ShipHUD.cpp">
+    <ClCompile Include="Source\PlayerShip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PShipCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -106,19 +106,19 @@
     <ClInclude Include="Source\SP2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FpCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\TpCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Player.h">
+    <ClInclude Include="Source\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GameObject.h">
+    <ClInclude Include="Source\PlayerShip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PshipCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

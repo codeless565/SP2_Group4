@@ -68,13 +68,13 @@ void SP2::UpdateShipHUD(double dt)
 		Compass *= -1;
 
 	//fuel Count
-	player.ship_idling();
+	playership.ship_idling();
 
 	if (camera.boost)
-		player.ship_boosting();
+		playership.ship_boosting();
 
 
-	int fuel_count = player.fuel;
+	int fuel_count = playership.fuel;
 	fuel = std::to_string(fuel_count);
 
 	//cout << "Compass: " << Compass << "Cam view: " << camera.view << endl;
@@ -87,9 +87,17 @@ void SP2::RenderShipHUD()
 	RenderQuadOnScreen(meshList[PLAYERSHIP_HUD_1], 80, 60, 40, 30);
 	//Fuel
 	RenderQuadOnScreen(meshList[HUD_FUELFRAME], 70, 100, 3.3f, 30);
-	RenderQuadOnScreen(meshList[HUD_BAR], 70, player.fuel, 3.3f, 12.5f + 17.5f * player.fuel / 100);
+	if (playership.boostable())
+	{
+		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.fuel, 3.3f, 12.5f + 17.5f * playership.fuel / 100);
+	}
+	else if (!playership.boostable() && bouncechecktimer % 12 != 0)
+	{
+		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.fuel, 3.3f, 12.5f + 17.5f * playership.fuel / 100);
+	}
 	RenderTextOnScreen(meshList[GEO_TEXT2], fuel, Color(0, 1, 0), 2, 0.f, 4.5f);
 	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(0, 1, 0), 2.5f, 2.05f, 3.55f);
+
 	//Energy
 	RenderQuadOnScreen(meshList[HUD_ENERGYFRAME], 70, 100, 76.8f, 30);	
 	RenderQuadOnScreen(meshList[HUD_BAR], 70, bounceT, 76.8f, 12.5f + 17.5f * bounceT / 100);
@@ -99,14 +107,14 @@ void SP2::RenderShipHUD()
 	RenderQuadOnScreen(meshList[HUD_COMPASS_N], 50, 50, 40, 50);
 	RenderMeshOnScreen(meshList[HUD_COMPASS_ARROW], Compass, 50, 50, 40, 50);
 	//hp
-	for (float i = 0; i < player.health / 10; i++)
+	for (float i = 0; i < playership.health / 10; i++)
 		 RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);
 	
-	if (player.health >= 50 && player.health <= 100 && bouncechecktimer <= 50)
+	if (playership.health >= 50 && player.health <= 100 && bouncechecktimer <= 50)
 		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Damaged", Color(1, 0, 0), 2, 27.5f, 2.f);
-	if (player.health > 20 && player.health < 50 && bouncechecktimer <= 100 && bouncechecktimer % 15 != 0)
+	if (playership.health > 20 && player.health < 50 && bouncechecktimer <= 100 && bouncechecktimer % 15 != 0)
 		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Critical", Color(1, 0, 0), 2, 27.5f, 2.f);
-	if (player.health > 0 && player.health <= 20 && bouncechecktimer % 10 != 0)
+	if (playership.health > 0 && player.health <= 20 && bouncechecktimer % 10 != 0)
 			RenderTextOnScreen(meshList[GEO_TEXT2], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
 	//dead
 	if (player.isDead())

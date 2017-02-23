@@ -86,13 +86,13 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Asteroid.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
-    <ClCompile Include="Source\FpCamera.cpp" />
+    <ClCompile Include="Source\PShipCamera.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
-    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\PlayerShip.cpp" />
     <ClCompile Include="Source\ShipHUD.cpp" />
     <ClCompile Include="Source\SP2.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -104,7 +104,7 @@
     <ClInclude Include="Source\AABB.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
-    <ClInclude Include="Source\FpCamera.h" />
+    <ClInclude Include="Source\PshipCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\LoadOBJ.h" />
@@ -112,7 +112,7 @@
     <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
-    <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\PlayerShip.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SP2.h" />
     <ClInclude Include="Source\shader.hpp" />
