@@ -2,7 +2,7 @@
 #define SP2_H
 
 #include "Scene.h"
-#include "FpCamera.h"
+#include "PShipCamera.h"
 #include "Mesh.h"
 #include "MatrixStack.h"
 #include "Light.h"
@@ -47,6 +47,7 @@ class SP2 : public Scene
 		HUD_COMPASS_N,
 		HUD_COMPASS_ARROW,
 		HUD_HP,
+		HUD_ZONEOUT,
 
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
@@ -121,7 +122,7 @@ private:
 	unsigned m_programID;
 	unsigned m_parameters[U_TOTAL];
 
-	FpCamera camera;
+	PShipCamera camera;
 
 	MS modelStack, viewStack, projectionStack;
 
@@ -133,9 +134,7 @@ private:
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	
-	float rotateAngle;
 	float framerate;
-	float rotateskybox;
 
 	//PlayerShip
 	PlayerShip playership;
@@ -146,7 +145,9 @@ private:
 	float Compass;
 	int fuelPercentage;
 	std::string fuel;
+	std::string zt1;
 	std::vector <Vector3> health;
+	float zoneOutTime;
 
 	void InitShipHUD();
 	void UpdateShipHUD(double dt);
@@ -167,15 +168,19 @@ private:
 
 	//Asteroids
 	std::vector <Vector3> asteroids_Pos;		//asteroids position
+	std::vector <Vector3> asteroids_Curr;		//asteroids current position
 	std::vector <Vector3> asteroids_Rotation;	//asteroids rotation
+	std::vector <int> asteroids_Speed;			//asteroids speed
+	std::vector <int> asteroid_Rev;			//asteroids curr direction
 	unsigned int asteroids_amt;					//number of asteroids
 	bool hit;
 	int bouncechecktimer;
 
 	void RNGAsteroidPos();		//generate asteroids
 	void InitAsteroidField();	//Initialize the Asteroid values
+	void UpdateAsteroidField(double dt);	//Updates the Asteroids
 	void RenderAsteroidField();	//Render the Asteroids
-	void CheckAsteroidCollision(int displacementX, int displacementY, int displacementZ); //Checks Collsion with Asteroid
+	void CheckAsteroidCollision(); //Checks Collsion with Asteroid
 };
 
 #endif
