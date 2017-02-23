@@ -35,16 +35,16 @@ void PShipCamera::Init(const Vector3& pos, const Vector3& target, const Vector3&
 //THIS IS FOR PLAYER SHIP!!!
 void PShipCamera::Update(double dt, bool boost)
 {
-	static const float CAMERA_SPEED = 60.f;
+	static const float CAMERA_SPEED = 50.f;
 
 	view = (target - position).Normalized();
 	right = view.Cross(up);
 	
 	//cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
-	//cout << "speed: " << currSpeed << " accel: " << accel << endl;
+	cout << "speed: " << currSpeed << " accel: " << accel << endl;
 	
 	//Acceleration
-	if (Application::IsKeyPressed(VK_SPACE) && Application::IsKeyPressed('W') && boost)
+	if (Application::IsKeyPressed(VK_SHIFT) && Application::IsKeyPressed('W') && boost)
 	{
 		this->boost = true;
 	}
@@ -64,7 +64,7 @@ void PShipCamera::Update(double dt, bool boost)
 
 
 	if (currSpeed >= maxSpeed)
-		currSpeed = maxSpeed;
+		currSpeed -= 2.f;
 
 	if (currSpeed <= 0.2f)
 		currSpeed = 0.2f;
@@ -97,40 +97,40 @@ void PShipCamera::Update(double dt, bool boost)
 
 	if (Application::IsKeyPressed(VK_LEFT))
 	{
-		if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-		{
-		}
-		else
-		{
+		//if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+		//{
+		//}
+		//else
+		//{
 
 			yaw = (float)(CAMERA_SPEED * dt);
 			Mtx44 rotation;
 			rotation.SetToRotation(yaw, 0, 1, 0);
 			view = rotation * view;
 			up = rotation * up;
-		}
+		//}
 	}
 	if (Application::IsKeyPressed(VK_RIGHT))
 	{
-		if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-		{
-		}
-		else
-		{
+		//if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+		//{
+		//}
+		//else
+		//{
 			yaw = (float)(-CAMERA_SPEED * dt);
 			Mtx44 rotation;
 			rotation.SetToRotation(yaw, 0, 1, 0);
 			view = rotation * view;
 			up = rotation * up;
-		}
+		//}
 	}
 	if (Application::IsKeyPressed(VK_UP))
 	{
-		if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
-		{
-		}
-		else
-		{
+		//if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+		//{
+		//}
+		//else
+		//{
 			pitch = (float)(CAMERA_SPEED * dt);
 			right.y = 0;
 			right.Normalize();
@@ -139,15 +139,15 @@ void PShipCamera::Update(double dt, bool boost)
 			Mtx44 rotation;
 			rotation.SetToRotation(pitch, right.x, right.y, right.z);
 			view = rotation * view;
-		}
+		//}
 	}
 	if (Application::IsKeyPressed(VK_DOWN))
 	{
-		if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
-		{
-		}
-		else
-		{
+		//if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+		//{
+		//}
+		//else
+		//{
 			pitch = (float)(-CAMERA_SPEED * dt);
 			right.y = 0;
 			right.Normalize();
@@ -156,7 +156,7 @@ void PShipCamera::Update(double dt, bool boost)
 			Mtx44 rotation;
 			rotation.SetToRotation(pitch, right.x, right.y, right.z);
 			view = rotation * view;
-		}
+		//}
 	}
 
 	target = position + view;
