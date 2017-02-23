@@ -1,4 +1,4 @@
-#include "FpCamera.h"
+#include "PShipCamera.h"
 #include "Application.h"
 #include "Mtx44.h"
 
@@ -7,15 +7,15 @@
 using std::cout;
 using std::endl;
 
-FpCamera::FpCamera()
+PShipCamera::PShipCamera()
 {
 }
 
-FpCamera::~FpCamera()
+PShipCamera::~PShipCamera()
 {
 }
 
-void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
+void PShipCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 {
 	this->position = defaultPosition = pos;
 	this->target = defaultTarget = target;
@@ -33,7 +33,7 @@ void FpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 	this->boost = false;
 }
 //THIS IS FOR PLAYER SHIP!!!
-void FpCamera::Update(double dt, bool boost)
+void PShipCamera::Update(double dt, bool boost)
 {
 	static const float CAMERA_SPEED = 60.f;
 
@@ -183,14 +183,14 @@ void FpCamera::Update(double dt, bool boost)
 	//}
 }
 
-void FpCamera::Reset()
+void PShipCamera::Reset()
 {
 	position = defaultPosition;
 	target = defaultTarget;
 	up = defaultUp;
 }
 
-bool FpCamera::obstruction(Vector3 min, Vector3 max)
+bool PShipCamera::obstruction(Vector3 min, Vector3 max)
 {
 	if (position.x > min.x && position.x < max.x &&
 		position.y > min.y && position.y < max.y &&

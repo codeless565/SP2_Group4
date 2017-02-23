@@ -1,9 +1,9 @@
-#ifndef FIRSTPERSONCAM_H
-#define FIRSTPERSONCAM_H
+#ifndef PLAYERSHIPCAM_H
+#define PLAYERSHIPCAM_H
 
 #include "Camera.h"
 
-class FpCamera : public Camera
+class PShipCamera : public Camera
 {
 public:
 	Vector3 defaultPosition;
@@ -21,8 +21,8 @@ public:
 	float maxSpeed; //maximum speed the ship can accelerate to
 	bool boost;		//boost enabled?
 
-	FpCamera();
-	~FpCamera();
+	PShipCamera();
+	~PShipCamera();
 	virtual void Init(const Vector3& pos, const Vector3& target, const Vector3& up);
 	virtual void Update(double dt , bool boost);
 	virtual void Reset();
