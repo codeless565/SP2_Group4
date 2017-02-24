@@ -6,6 +6,7 @@
 class PlayerShip
 {
 private:
+	int health;			// HP hitPoints
 	bool dead;
 	bool fuel_depleted; 
 	float speed;		
@@ -15,7 +16,6 @@ private:
 
 public:	
 	Vector3 position;	// Position
-	int health;			// HP hitPoints
 	int damage;			// DMG dealt
 	float energy;		// Ammo
 	float fuel;			// Fuel
@@ -30,6 +30,7 @@ public:
 	void ship_boosting();
 	void fuel_depletion();
 	bool boostable();
+	void damaged(int dmg);
 	bool isZoneOut(float zt);
 	bool isDead();
 
