@@ -40,30 +40,38 @@ void SP2::UpdateSpaceStation(double dt)
 
 void SP2::RenderSpaceStation()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(-2000, 10, 3000);
-	modelStack.Rotate(30, 0, 0, 1);
-	modelStack.Rotate(SSEntireRotate, 0, 1, 0);
-	modelStack.Scale(300, 300, 300);
+	Vector3 SS = { -13000, 10, -2000 };
+
+	Vector3 distance = SS - playership.position;
+
+	if (distance.Length() <= 20000)
 	{
 		modelStack.PushMatrix();
-		modelStack.Rotate(SSTopRotate, 0, 1, 0);
-		RenderMesh(meshList[SPACESTATION_TOP], false);
-		modelStack.PopMatrix();
+		modelStack.Translate(SS.x, SS.y, SS.z);
+		modelStack.Rotate(-90, 0, 1, 0);
+		modelStack.Rotate(30, 0, 0, 1);
+		modelStack.Rotate(SSEntireRotate, 0, 1, 0);
+		modelStack.Scale(300, 300, 300);
+		{
+			modelStack.PushMatrix();
+			modelStack.Rotate(SSTopRotate, 0, 1, 0);
+			RenderMesh(meshList[SPACESTATION_TOP], false);
+			modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		modelStack.Rotate(SSMidRotate, 0, 1, 0);
-		RenderMesh(meshList[SPACESTATION_MID], false);
-		modelStack.PopMatrix();
+			modelStack.PushMatrix();
+			modelStack.Rotate(SSMidRotate, 0, 1, 0);
+			RenderMesh(meshList[SPACESTATION_MID], false);
+			modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		modelStack.Rotate(SSBottomRotate, 0, 1, 0);
-		RenderMesh(meshList[SPACESTATION_BOTTOM], false);
-		modelStack.PopMatrix();
+			modelStack.PushMatrix();
+			modelStack.Rotate(SSBottomRotate, 0, 1, 0);
+			RenderMesh(meshList[SPACESTATION_BOTTOM], false);
+			modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		RenderMesh(meshList[SPACESTATION_BODY], false);
+			modelStack.PushMatrix();
+			RenderMesh(meshList[SPACESTATION_BODY], false);
+			modelStack.PopMatrix();
+		}
 		modelStack.PopMatrix();
 	}
-	modelStack.PopMatrix();
 }

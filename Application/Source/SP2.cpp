@@ -77,7 +77,7 @@ void SP2::Init()
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
 
-	camera.Init(Vector3(0, 100, 0), Vector3(0, 100, 10), Vector3(0, 10, 0));
+	camera.Init(Vector3(-9000, 100, -2000), Vector3(10, 100, -2000), Vector3(0, 10, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 
@@ -170,10 +170,11 @@ void SP2::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
 	playership.InitPlayerShip(camera.position, 100, 5, 100, 100, 20);
-	playership.InitAOZone({ -5000, -5000, -5000 }, { 5000, 5000, 5000 });
+	//playership.InitAOZone({ -8000, -8000, -2500 }, { 9000, 8000, -500 });
+	playership.InitAOZone({ -10000, -1000, -2500 }, { 90000, 2000, -500 });
 
 	BShipEngine = 0;
-	PShipRotateHori = 0;
+	PShipRotateHori = 90;
 	PShipRotateVerti = 0;
 	PShipRoll = 0;
 }
@@ -331,9 +332,14 @@ void SP2::Render()
 
 	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-
-	RenderSkybox();
+	
 	RenderMesh(meshList[GEO_AXES], false);
+
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
+	modelStack.Rotate(90, 0, 1, 0);
+	RenderSkybox();
+	modelStack.PopMatrix();
 
 	// PlayerShip
 	modelStack.PushMatrix();

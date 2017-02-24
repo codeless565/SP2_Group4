@@ -12,6 +12,7 @@
 #include "AABB.h"
 
 #include "PlayerShip.h"
+#include "Asteroid.h"
 
 class SP2 : public Scene
 {
@@ -173,8 +174,11 @@ private:
 	std::vector <int> asteroids_Speed;			//asteroids speed
 	std::vector <int> asteroid_Rev;			//asteroids curr direction
 	unsigned int asteroids_amt;					//number of asteroids
+	int max_dist;
 	bool hit;
 	int bouncechecktimer;
+	int dt_time;
+	bool counting;
 
 	void RNGAsteroidPos();		//generate asteroids
 	void InitAsteroidField();	//Initialize the Asteroid values
