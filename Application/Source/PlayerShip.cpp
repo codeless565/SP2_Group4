@@ -74,17 +74,20 @@ bool PlayerShip::boostable()
 	else
 		return true;
 }
+void PlayerShip::damaged(int dmg)
+{
+	health -= dmg;
+}
 bool PlayerShip::isZoneOut(float zt)
 {
-	if (zt <= 0)
-		dead = true;
+	//if (zt <= 0)
+	//	dead = true;
 
 	if (position.x < minAOZone.x || position.y < minAOZone.y || position.z < minAOZone.z || position.x > maxAOZone.x || position.y > maxAOZone.y || position.z > maxAOZone.z)
 		return true;
 	else
 		return false;
 }
-
 bool PlayerShip::isDead()
 {
 	if (health <= 0)

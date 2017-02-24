@@ -40,7 +40,7 @@ void PShipCamera::Update(double dt, bool boost)
 	view = (target - position).Normalized();
 	right = view.Cross(up);
 	
-	//cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
+	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
 	cout << "speed: " << currSpeed << " accel: " << accel << endl;
 	
 	//Acceleration
