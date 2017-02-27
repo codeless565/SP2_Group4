@@ -1,4 +1,4 @@
-#include "SP2.h"
+#include "ShipRace.h"
 #include "GL\glew.h"
 
 #include "Application.h"
@@ -11,7 +11,7 @@
 using std::cout;
 using std::endl;
 
-void SP2::InitShipHUD()
+void ShipRace::InitShipHUD()
 {
 	meshList[PLAYERSHIP_HUD_1] = MeshBuilder::GenerateQuad("HUD_1", Color(1, 1, 1));
 	meshList[PLAYERSHIP_HUD_1]->textureID = LoadTGA("Image//ShipHUD_1.tga");
@@ -37,6 +37,12 @@ void SP2::InitShipHUD()
 	meshList[HUD_ZONEOUT] = MeshBuilder::GenerateQuad("HUD_ZoneOut", Color(1, 1, 1));
 	meshList[HUD_ZONEOUT]->textureID = LoadTGA("Image//Ship_ZoneOut.tga");
 
+	meshList[HUD_HDRIVE] = MeshBuilder::GenerateQuad("HyperDrive", Color(1, 1, 1));
+	meshList[HUD_HDRIVE]->textureID = LoadTGA("Image//Hyperdrive.tga");
+
+	meshList[HUD_GAMEOVER] = MeshBuilder::GenerateQuad("GameOver", Color(1, 1, 1));
+	meshList[HUD_GAMEOVER]->textureID = LoadTGA("Image//GameOver.tga");
+
 	//init health
 	for (int i = 0; i < 10; i++)
 	{
@@ -56,26 +62,33 @@ void SP2::InitShipHUD()
 
 	bounceT = 0;
 	dt_time = 30;
+	safezone_X = 70000;
+	hyperDrive = false;
+	hyperdriveScale = 0.1;
 	counting = false;
 	zoneOutTime = playership.zoneOutTime() * 60;
 	Compass = 0;
-	Target = { 4000, 0, 30 };
+	Target = { 70000, 0, 30 };
+
+	overtaken = false;
+	captured = false;
+	captTime = 0;
 
 }
 
-void SP2::UpdateShipHUD(double dt)
+void ShipRace::UpdateShipHUD(double dt)
 {
 	float Player_Target = camera.view.XZDot(Target);
 	float Player_Target_Length = camera.view.XZLength()*Target.XZLength();
 
 	Compass = Math::RadianToDegree(acos(Player_Target / Player_Target_Length));
 
-	if (camera.view.z <=0)
+	if (camera.view.z <= 0)
 		Compass *= -1;
 
 	//fuel Count
 	playership.ship_idling();
-	
+
 	if (camera.boost)
 		playership.ship_boosting();
 
@@ -83,7 +96,57 @@ void SP2::UpdateShipHUD(double dt)
 	int fuel_count = playership.fuel;
 	fuel = std::to_string(fuel_count);
 
-	cout << "Compass: " << Compass << "Cam view: " << camera.view << endl;
+	//hyperdrive
+	if (playership.position.x > safezone_X && Application::IsKeyPressed('E'))
+	{
+		hyperDrive = true;
+	}
+
+	if (hyperDrive)
+	{
+		for (int i = 0; i < enemyship.size(); i++)
+		{
+			if (enemyship[i].getHealth() > 0)
+				enemyship[i].damaged(1000);
+		}
+		playership.hyperdrive(hyperDrive);
+		hyperdriveScale += (float)(150 * dt);
+	}
+	//distance to overtake enemy
+	for (int i = 0; i < enemyship.size(); i++)
+	{
+		if (enemyship[i].position.x > playership.position.x + 100)
+		{
+			overtaken = true;
+			break;
+		}
+		else
+		{
+			overtaken = false;
+		}
+	}
+
+	if (overtaken)
+	{
+		captTime--;
+	}
+	else
+		captTime = 300;
+		
+	if (captTime <= 0)
+		captTime = 0;
+
+	if (captTime <= 0)
+		captured = true;
+
+	cout << captTime << endl;
+	//distance from goal
+	dist_from_goal = safezone_X - playership.position.x;
+
+	if (dist_from_goal <= 9000)
+		nearGoal = true;
+	else
+		nearGoal = false;
 		
 	//zoneOut
 	if (playership.isZoneOut(zoneOutTime))
@@ -111,7 +174,7 @@ void SP2::UpdateShipHUD(double dt)
 	bounceT++;
 }
 
-void SP2::RenderShipHUD()
+void ShipRace::RenderShipHUD()
 {
 	//CrossHair
 	RenderQuadOnScreen(meshList[PLAYERSHIP_HUD_1], 80, 60, 40, 30);
@@ -130,12 +193,34 @@ void SP2::RenderShipHUD()
 
 	//Energy
 	RenderQuadOnScreen(meshList[HUD_ENERGYFRAME], 70, 100, 76.8f, 30);	
-	RenderQuadOnScreen(meshList[HUD_BAR], 70, bounceT, 76.8f, 12.5f + 17.5f * bounceT / 100);
-	RenderTextOnScreen(meshList[GEO_TEXT2], fuel, Color(0, 1, 0), 2, 36.8f, 4.5f);
+	RenderTextOnScreen(meshList[GEO_TEXT2], "0", Color(0, 1, 0), 2, 36.8f, 4.5f);
 	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(0, 1, 0), 2.5f, 31.45f, 3.55f);
 	//Compass
-	RenderQuadOnScreen(meshList[HUD_COMPASS_N], 50, 50, 40, 50);
-	RenderMeshOnScreen(meshList[HUD_COMPASS_ARROW], Compass, 50, 50, 40, 50);
+	if (playership.position.x < safezone_X && dist_from_goal > 9000)
+	{
+		RenderQuadOnScreen(meshList[HUD_COMPASS_N], 50, 50, 40, 50);
+		RenderMeshOnScreen(meshList[HUD_COMPASS_ARROW], Compass, 50, 50, 40, 50);
+	}
+	//overtake
+	if (overtaken)
+	{
+		std::string time = std::to_string(captTime);
+		RenderTextOnScreen(meshList[GEO_TEXT2], time, Color(1, 0, 0), 3.f, 12.1f, 17.f);
+		std::string overtake = std::to_string(dist_overtake);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "Don't let them catch you!", Color(1, 0, 0), 3.2f, 0.5f, 17.f);
+	}
+	//hyperdrive
+	if (playership.position.x > safezone_X)
+	{
+		if (bouncechecktimer % 18 != 0)
+			RenderTextOnScreen(meshList[GEO_TEXT2], "Safe to use HyperDrive", Color(1, 0, 0), 3.5f, 0.6f, 14.f);
+	}	
+	if (nearGoal && dist_from_goal >= 5)
+	{
+		std::string goal = std::to_string(dist_from_goal);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "Keep going!", Color(1, 0, 0), 3.5f, 6.5f, 15.f);
+		RenderTextOnScreen(meshList[GEO_TEXT2], goal, Color(1, 0, 0), 3.5f, 9.7f, 14.f);
+	}
 	//hp
 	for (float i = 0; i < playership.getHealth() / 10; i++)
 		 RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);
@@ -145,7 +230,8 @@ void SP2::RenderShipHUD()
 	if (playership.getHealth() > 20 && playership.getHealth() < 50 && bouncechecktimer <= 100 && bouncechecktimer % 15 != 0)
 		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Critical", Color(1, 0, 0), 2, 27.5f, 2.f);
 	if (playership.getHealth() > 0 && playership.getHealth() <= 20 && bouncechecktimer % 10 != 0)
-			RenderTextOnScreen(meshList[GEO_TEXT2], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
+	
 	//zone out
 	if (playership.isZoneOut(zoneOutTime))
 	{
@@ -155,9 +241,5 @@ void SP2::RenderShipHUD()
 
 		RenderTextOnScreen(meshList[GEO_TEXT2], zt1 , Color(1, 0, 0), 3, 13.f, 8.f);
 	}
-	//dead
-	if (playership.isDead())
-	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "You are dead", Color(1, 0, 0), 6, 1.f, 4.5f);
-	}
+
 }
