@@ -2,12 +2,11 @@
 
 PlayerShip::PlayerShip()
 {
-	PlayerShip({ 0, 0, 0 }, 100, 5, 100, 100, 0);
+	PlayerShip({ 0, 0, 0 }, 100, 100, 100, 0);
 };
-PlayerShip::PlayerShip(Vector3 pos, int hp, int dmg, int ey, int oil, int sp)
+PlayerShip::PlayerShip(Vector3 pos, int hp,int ey, int oil, int sp)
 {
 	health = hp;
-	damage = dmg;
 	position = pos;
 	energy = ey;
 	fuel = oil;
@@ -22,10 +21,9 @@ PlayerShip::PlayerShip(Vector3 pos, int hp, int dmg, int ey, int oil, int sp)
 PlayerShip::~PlayerShip()
 {
 }
-void PlayerShip::InitPlayerShip(Vector3 pos, int hp, int dmg, int ey, int oil, int sp)
+void PlayerShip::InitPlayerShip(Vector3 pos, int hp, int ey, int oil, int sp)
 {
 	health = hp;
-	damage = dmg;
 	position = pos;
 	energy = ey;
 	fuel = oil;
@@ -56,6 +54,9 @@ void PlayerShip::ship_boosting()
 {
 	if (fuel != (fuel <= 0))
 		fuel--;
+
+	if (fuel <= 0)
+		fuel = 0;
 }
 void PlayerShip::fuel_depletion()
 {
@@ -73,6 +74,13 @@ bool PlayerShip::boostable()
 		return false;
 	else
 		return true;
+}
+void PlayerShip::hyperdrive(bool engaged)
+{
+	if (engaged)
+		fuel_depleted = true;
+	else
+		fuel_depleted = false;
 }
 void PlayerShip::damaged(int dmg)
 {
@@ -104,10 +112,6 @@ int PlayerShip::getHealth()
 {
 	return health;
 }
-int PlayerShip::getDamage()
-{
-	return damage;
-}
 int PlayerShip::getEnergy()
 {
 	return energy;
@@ -136,10 +140,6 @@ void PlayerShip::setPos(Vector3 pos)
 void PlayerShip::setHealth(int hp)
 {
 	health = hp;
-}
-void PlayerShip::setDamage(int dmg)
-{
-	damage = dmg;
 }
 void PlayerShip::setEnergy(int ey)
 {
