@@ -1,4 +1,4 @@
-#include "SP2.h"
+#include "ShipRace.h"
 
 #include "GL\glew.h"
 
@@ -12,7 +12,7 @@ using std::cout;
 using std::endl;
 
 //Initialise the asteroids
-void SP2::InitAsteroidField()
+void ShipRace::InitAsteroidField()
 {
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
@@ -30,7 +30,7 @@ void SP2::InitAsteroidField()
 	RNGAsteroidPos();
 }
 //Updates the position of the astroids - OK!
-void SP2::UpdateAsteroidField(double dt)
+void ShipRace::UpdateAsteroidField(double dt)
 {
 	//move +X - OK
 	for (int i = 0; i < asteroids_Pos.size() * 1 / 6; i++)
@@ -112,7 +112,7 @@ void SP2::UpdateAsteroidField(double dt)
 	}
 }
 //Renders all the asteroids
-void SP2::RenderAsteroidField()
+void ShipRace::RenderAsteroidField()
 {
 	for (int i = 0; i < asteroids_Curr.size() / 2; i++)
 	{
@@ -174,7 +174,7 @@ void SP2::RenderAsteroidField()
 	}
 }
 //Set all the params of the asteroids
-void SP2::RNGAsteroidPos()
+void ShipRace::RNGAsteroidPos()
 {
 	int x, y, z;	//Position/Rotation of the asteroids
 
@@ -185,11 +185,11 @@ void SP2::RNGAsteroidPos()
 		x = (rand() % 40 + 1) * -200;	//x ranged from 1 to 20
 		
 		if (i % 2 == 0)
-			y = (rand() % 8) * 160;		//y ranged from 1 to 4
+			y = (rand() % 8) * 140;		//y ranged from 1 to 4
 		else
-			y = (rand() % 8) * -170;	//y ranged from -1 to -4
+			y = (rand() % 8) * -140;	//y ranged from -1 to -4
 
-		z = (rand() % 20 + 1) * -160;		//z ranged from 1 to 8
+		z = (rand() % 20 + 1) * -130;		//z ranged from 1 to 8
 		cout << x << ' ' << y << ' ' << z << endl;
 
 		asteroids_Curr.push_back(Vector3(x, y, z));
@@ -200,11 +200,11 @@ void SP2::RNGAsteroidPos()
 		x = (rand() % 260 + 1) * 240;	//x ranged from 1 to 20
 
 		if (i % 2 == 0)
-			y = (rand() % 8 + 1) * 160;		//y ranged from 1 to 4
+			y = (rand() % 8 + 1) * 140;		//y ranged from 1 to 4
 		else
-			y = (rand() % 8 + 1) * -170;	//y ranged from -1 to -4
+			y = (rand() % 8 + 1) * -140;	//y ranged from -1 to -4
 
-		z = (rand() % 20 + 1) * -160;		//z ranged from 1 to 8
+		z = (rand() % 20 + 1) * -130;		//z ranged from 1 to 8
 		cout << x << ' ' << y << ' ' << z << endl;
 
 		asteroids_Curr.push_back(Vector3(x, y, z));
@@ -239,7 +239,7 @@ void SP2::RNGAsteroidPos()
 	}
 }
 
-void SP2::CheckAsteroidCollision()
+void ShipRace::CheckAsteroidCollision()
 {
 	int x = playership.position.x;
 	int y = playership.position.y;
@@ -271,16 +271,39 @@ void SP2::CheckAsteroidCollision()
 	if (hit)
 	{
 		playership.damaged(10);
-		camera.currSpeed
-			/= 2;
+		camera.currSpeed /= 1.5;
 		hit = false;
 	}
 
-	//if (hit && bouncechecktimer >= 5)
-	//{
-	//	hit = false;
-	//	bouncechecktimer = 0;
-	//}
-
 	bouncechecktimer++;
+}
+
+void ShipRace::CheckEnemyCollision()
+{
+	for (int i = 0; i < asteroids_Curr.size(); i++)
+	{
+		for (int j = 0; j < enemyship.size(); j++)
+		{
+			Vector3 enemy_xz(enemyship[j].position.x, 0, enemyship[j].position.z);
+			Vector3 enemy_y(0, enemyship[j].position.y, 0);
+
+			Vector3 asteroid_xz(asteroids_Curr[i].x, 0, asteroids_Curr[i].z);
+			Vector3 asteroid_y(0, asteroids_Curr[i].y, 0);
+
+			Vector3 distance_xz = asteroid_xz - enemy_xz;
+			Vector3 distance_y = asteroid_y - enemy_y;
+
+			if (distance_xz.Length() < 70 && distance_y.Length() < 40)
+			{
+				asteroids_Pos.erase(asteroids_Pos.begin() + i);
+				asteroids_Curr.erase(asteroids_Curr.begin() + i);
+				asteroids_Rotation.erase(asteroids_Rotation.begin() + i);
+				asteroids_Speed.erase(asteroids_Speed.begin() + i);
+				asteroid_Rev.erase(asteroid_Rev.begin() + i);
+
+				enemyship[j].damaged(10);
+				enemyship[j].slowed();
+			}
+		}
+	}
 }

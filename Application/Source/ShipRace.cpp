@@ -1,4 +1,4 @@
-#include "SP2.h"
+#include "ShipRace.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -10,15 +10,15 @@
 #include "LoadTGA.h"
 
 
-SP2::SP2()
+ShipRace::ShipRace()
 {
 }
 
-SP2::~SP2()
+ShipRace::~ShipRace()
 {
 }
 
-void SP2::Init()
+void ShipRace::Init()
 {
 	// Set background color to dark blue
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -77,7 +77,7 @@ void SP2::Init()
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
 
-	camera.Init(Vector3(-9000, 100, -2000), Vector3(10, 100, -2000), Vector3(0, 10, 0));
+	camera.Init(Vector3(-9000, 100, -1700), Vector3(10, 100, -1700), Vector3(0, 10, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 
@@ -169,17 +169,25 @@ void SP2::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 
-	playership.InitPlayerShip(camera.position, 100, 5, 100, 100, 20);
+	playership.InitPlayerShip(camera.position, 100, 100, 100, 20);
 	//playership.InitAOZone({ -8000, -8000, -2500 }, { 9000, 8000, -500 });
 	playership.InitAOZone({ -10000, -1000, -2500 }, { 90000, 2000, -500 });
 
-	BShipEngine = 0;
+	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y + 105, playership.position.z + 298 }, 300, 100, 40, 100, 15));
+	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y - 193, playership.position.z + 306 }, 300, 100, 40, 100, 15));
+	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y + 113, playership.position.z - 305 }, 300, 100, 40, 100, 15));
+	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y - 185, playership.position.z - 280 }, 300, 100, 40, 100, 15));
+
+	position_x = camera.position.x;
+	position_y = camera.position.y;
+	position_z = camera.position.z;
+
 	PShipRotateHori = 90;
 	PShipRotateVerti = 0;
-	PShipRoll = 0;
+	GameClearTimer = 0;
 }
 
-void SP2::Update(double dt)
+void ShipRace::Update(double dt)
 {
 	framerate = 1 / dt;
 
@@ -223,82 +231,83 @@ void SP2::Update(double dt)
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 	}
 
-	//BattleShip
-	BShipEngine -= (float)(20 * dt);
-	//SpaceStation
-	UpdateSpaceStation(dt);
-	UpdateAsteroidField(dt);
+	if (!captured)
+	{//SpaceStation
+		UpdateSpaceStation(dt);
+		UpdateAsteroidField(dt);
 
-	//if (PShipRoll > 0)
-	//{
-	//	PShipRoll -= (float)(60 * dt);
-	//}
-	//else
-	//{
-	//	PShipRoll += (float)(60 * dt);
-	//}
-	//if (PShipRoll >= 50)
-	//	PShipRoll = 50;
+		for (int i = 0; i < enemyship.size(); i++)
+		{
+			enemyship[i].chasing(dt);
+		}
 
-	//if (PShipRoll <= -50)
-	//	PShipRoll = -50;
+		CheckAsteroidCollision();
+		CheckEnemyCollision();
 
-	CheckAsteroidCollision();
-
-	if (!playership.isDead())
-	{
 		UpdateShipHUD(dt);
-		camera.Update(dt, playership.boostable());
-		playership.setPos(camera.position);
 
-		//player
-		if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
+		if (!playership.isDead() && !hyperDrive)
 		{
-			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+			camera.Update(dt, playership.boostable(), hyperDrive);
+			//player
+			if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
 			{
+				if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+				{
+				}
+				else
+				{
+					PShipRotateHori += (float)(camera.yaw);
+				}
 			}
-			else
+			else if (Application::IsKeyPressed(VK_RIGHT) && !Application::IsKeyPressed(VK_LEFT))
 			{
-				PShipRotateHori += (float)(camera.yaw);
-				//PShipRoll -= (float)(80 * dt);
+				if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+				{
+				}
+				else
+				{
+					PShipRotateHori += (float)(camera.yaw);
+				}
 			}
-		}
-		else if (Application::IsKeyPressed(VK_RIGHT) && !Application::IsKeyPressed(VK_LEFT))
-		{
-			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+
+			if (Application::IsKeyPressed(VK_UP) && !Application::IsKeyPressed(VK_DOWN))
 			{
+				if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+				{
+				}
+				else
+				{
+					PShipRotateVerti -= (float)(camera.pitch);
+				}
 			}
-			else
+			else if (!Application::IsKeyPressed(VK_UP) && Application::IsKeyPressed(VK_DOWN))
 			{
-				PShipRotateHori += (float)(camera.yaw);
-				//PShipRoll += (float)(80 * dt);
+				if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+				{
+				}
+				else
+				{
+					PShipRotateVerti -= (float)(camera.pitch);
+				}
 			}
+			position_x = camera.position.x;
+			position_y = camera.position.y;
+			position_z = camera.position.z;
 		}
 
-		if (Application::IsKeyPressed(VK_UP) && !Application::IsKeyPressed(VK_DOWN))
+		if (!hyperDrive)
+			playership.setPos(camera.position);
+		else
 		{
-			if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
-			{
-			}
-			else
-			{
-				PShipRotateVerti -= (float)(camera.pitch);
-			}
+			position_x += (float)(500 * dt);
 		}
-		else if (!Application::IsKeyPressed(VK_UP) && Application::IsKeyPressed(VK_DOWN))
-		{
-			if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
-			{
-			}
-			else
-			{
-				PShipRotateVerti -= (float)(camera.pitch);
-			}
-		}
+
+		GameClearTimer++;
 	}
 }
 
-void SP2::Render()
+void ShipRace::Render()
 {
 	if (light[0].type == Light::LIGHT_DIRECTIONAL)
 	{
@@ -343,8 +352,7 @@ void SP2::Render()
 
 	// PlayerShip
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.target.x, camera.target.y, camera.target.z);
-	modelStack.Rotate(PShipRoll, 0, 0, 1);
+	modelStack.Translate(position_x, position_y, position_z);
 	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
 	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
 	{
@@ -367,41 +375,45 @@ void SP2::Render()
 	// Space Station
 	RenderSpaceStation();
 
-	// BattleShip
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 0, 300);
-	modelStack.Rotate(180, 0, 1, 0);
-	modelStack.Scale(20, 20, 20);
-	{
-		modelStack.PushMatrix();
-		RenderMesh(meshList[BATTLESHIP_BODY], false);
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-		modelStack.Rotate(BShipEngine, 0, 0, 1);
-		RenderMesh(meshList[BATTLESHIP_ENGINE], false);
-		modelStack.PopMatrix();
-	}
-	modelStack.PopMatrix();
-
 	// EnemyShip
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 0, 100);
-	modelStack.Rotate(180, 0, 1, 0);
-	modelStack.Scale(5, 5, 5);
-	RenderMesh(meshList[ENEMYSHIP], false);
-	modelStack.PopMatrix();
+	for (int i = 0; i < enemyship.size(); i++)
+	{
+		Vector3 distance = playership.position - enemyship[i].position;
+
+		if (distance.Length() <= 2000 && !enemyship[i].isDead())
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(enemyship[i].position.x, enemyship[i].position.y, enemyship[i].position.z);
+			modelStack.Rotate(90, 0, 1, 0);
+			modelStack.Scale(20, 20, 20);
+			RenderMesh(meshList[ENEMYSHIP], false);
+			modelStack.PopMatrix();
+		}
+	}
 
 	RenderAsteroidField();
 
 	RenderTextOnScreen(meshList[GEO_TEXT2], "FPS", Color(0, 1, 0), 2, 0, 0);
 	std::string s = std::to_string(framerate);
 	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 2, 3.5f, 0);
+	
+	if (hyperDrive && GameClearTimer >= 1200)
+		RenderTextOnScreen(meshList[GEO_TEXT2], "MISSION CLEAR", Color(1, 0, 0), 5.f, 1.75f, 5.5f);
 
-	RenderShipHUD();
+	if (!hyperDrive)
+		RenderShipHUD();
+	else
+		RenderQuadOnScreen(meshList[HUD_HDRIVE], hyperdriveScale, hyperdriveScale, 40, 30);
+	
+	//dead
+	if (playership.isDead() || captured)
+	{
+		RenderQuadOnScreen(meshList[HUD_GAMEOVER], 100, 100, 40, 30);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "GAME OVER", Color(1, 0, 0), 6, 2.5f, 4.5f);
+	}
 }
 
-//void SP2::Render()
+//void ShipRace::Render()
 //{
 //
 //	if (light[0].type == Light::LIGHT_DIRECTIONAL)
@@ -473,7 +485,7 @@ void SP2::Render()
 //	
 //}
 
-void SP2::RenderSkybox()
+void ShipRace::RenderSkybox()
 {
 	modelStack.PushMatrix();
 	{
@@ -526,7 +538,7 @@ void SP2::RenderSkybox()
 	modelStack.PopMatrix();
 }
 
-void SP2::RenderMesh(Mesh *mesh, bool enableLight)
+void ShipRace::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 
@@ -569,7 +581,7 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 	}
 }
 
-void SP2::RenderMeshOnScreen(Mesh* mesh, float rotZ, int sizeX, int sizeZ, int posX, int posY)
+void ShipRace::RenderMeshOnScreen(Mesh* mesh, float rotZ, int sizeX, int sizeZ, int posX, int posY)
 {
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
@@ -592,7 +604,7 @@ void SP2::RenderMeshOnScreen(Mesh* mesh, float rotZ, int sizeX, int sizeZ, int p
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::RenderQuadOnScreen(Mesh* mesh, float sizex, float sizey, float x, float y)
+void ShipRace::RenderQuadOnScreen(Mesh* mesh, float sizex, float sizey, float x, float y)
 {
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
@@ -614,7 +626,7 @@ void SP2::RenderQuadOnScreen(Mesh* mesh, float sizex, float sizey, float x, floa
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::RenderText(Mesh* mesh, std::string text, Color color)
+void ShipRace::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
@@ -641,7 +653,7 @@ void SP2::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void ShipRace::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if (!mesh || mesh->textureID <= 0) //Proper error check
 		return;
@@ -686,7 +698,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::Exit()
+void ShipRace::Exit()
 {
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	glDeleteProgram(m_programID);

@@ -1,5 +1,5 @@
-#ifndef SP2_H
-#define SP2_H
+#ifndef SHIPRACE_H
+#define SHIPRACE_H
 
 #include "Scene.h"
 #include "PShipCamera.h"
@@ -12,9 +12,10 @@
 #include "AABB.h"
 
 #include "PlayerShip.h"
-#include "Asteroid.h"
+#include "Enemy.h"
+//#include "Asteroid.h"
 
-class SP2 : public Scene
+class ShipRace : public Scene
 {
 	enum GEOMETRY_TYPE
 	{
@@ -49,6 +50,8 @@ class SP2 : public Scene
 		HUD_COMPASS_ARROW,
 		HUD_HP,
 		HUD_ZONEOUT,
+		HUD_HDRIVE,
+		HUD_GAMEOVER,
 
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
@@ -107,8 +110,8 @@ class SP2 : public Scene
 	};
 
 public:
-	SP2();
-	~SP2();
+	ShipRace();
+	~ShipRace();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -140,8 +143,6 @@ private:
 	//PlayerShip
 	PlayerShip playership;
 	float PShipEngine, PShipRotateHori, PShipRotateVerti;
-	float PShipRoll;
-	float PShipAccel;
 	float bounceT;
 	float Compass;
 	int fuelPercentage;
@@ -154,8 +155,25 @@ private:
 	void UpdateShipHUD(double dt);
 	void RenderShipHUD();
 
+	bool hyperDrive;
+	int hyperdriveScale;
+	int safezone_X;
+	float position_x, position_y, position_z;
+
+	//EnemyShip
+	std::vector <Enemy> enemyship;
+	int dist_overtake;
+	bool overtaken;
+	bool captured;
+	int captTime;
+
 	//Target location
 	Vector3 Target;
+	int goal;
+	int dist_from_goal;
+	bool nearGoal;
+	float GameClearTimer;
+
 
 	//SpaceStation
 	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;
@@ -164,9 +182,6 @@ private:
 	void UpdateSpaceStation(double dt);	//Animate the SpaceStation
 	void RenderSpaceStation();			//Render the SpaceStation
 	
-	//BattleShip
-	float BShipEngine;
-
 	//Asteroids
 	std::vector <Vector3> asteroids_Pos;		//asteroids position
 	std::vector <Vector3> asteroids_Curr;		//asteroids current position
@@ -180,11 +195,12 @@ private:
 	int dt_time;
 	bool counting;
 
-	void RNGAsteroidPos();		//generate asteroids
-	void InitAsteroidField();	//Initialize the Asteroid values
+	void RNGAsteroidPos();			//generate asteroids
+	void InitAsteroidField();		//Initialize the Asteroid values
 	void UpdateAsteroidField(double dt);	//Updates the Asteroids
-	void RenderAsteroidField();	//Render the Asteroids
-	void CheckAsteroidCollision(); //Checks Collsion with Asteroid
+	void RenderAsteroidField();		//Render the Asteroids
+	void CheckAsteroidCollision();	//Checks Collision with Asteroid
+	void CheckEnemyCollision();		//Checks Collision against enemy
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "SP2.h"
+#include "ShipRace.h"
 
 #include "GL\glew.h"
 
@@ -10,7 +10,7 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 
-void SP2::InitSpaceStation()
+void ShipRace::InitSpaceStation()
 {
 	meshList[SPACESTATION_TOP] = MeshBuilder::GenerateOBJ("SpaceStation_Top", "OBJ//SSTop.obj");
 	meshList[SPACESTATION_TOP]->textureID = LoadTGA("Image//SSTop.tga");
@@ -30,7 +30,7 @@ void SP2::InitSpaceStation()
 	SSEntireRotate = 0;;
 }
 
-void SP2::UpdateSpaceStation(double dt)
+void ShipRace::UpdateSpaceStation(double dt)
 {
 	SSTopRotate += (float)(10 * dt);
 	SSMidRotate -= (float)(10 * dt);
@@ -38,9 +38,9 @@ void SP2::UpdateSpaceStation(double dt)
 	SSEntireRotate += (float)(2 * dt);
 }
 
-void SP2::RenderSpaceStation()
+void ShipRace::RenderSpaceStation()
 {
-	Vector3 SS = { -13000, 10, -2000 };
+	Vector3 SS = { -13000, 10, playership.position.z };
 
 	Vector3 distance = SS - playership.position;
 
