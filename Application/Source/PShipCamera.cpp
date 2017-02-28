@@ -39,12 +39,12 @@ void PShipCamera::Update(double dt, bool boost, bool warp)
 
 	view = (target - position).Normalized();
 	right = view.Cross(up);
-	
-//	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
-//	cout << "speed: " << currSpeed << " accel: " << accel << endl;
-	
+
+	cout << "X: " << position.x << " Y: " << position.y << " Z: " << position.z << endl;
+	//	cout << "speed: " << currSpeed << " accel: " << accel << endl;
+
 	if (!warp)
-	{//Acceleration
+	{	//Acceleration
 		if (Application::IsKeyPressed(VK_SHIFT) && Application::IsKeyPressed('W') && boost)
 		{
 			this->boost = true;
@@ -97,66 +97,65 @@ void PShipCamera::Update(double dt, bool boost, bool warp)
 
 		if (Application::IsKeyPressed(VK_LEFT))
 		{
-			//if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-			//{
-			//}
-			//else
-			//{
-
-			yaw = (float)(CAMERA_SPEED * dt);
-			Mtx44 rotation;
-			rotation.SetToRotation(yaw, 0, 1, 0);
-			view = rotation * view;
-			up = rotation * up;
-			//}
+			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+			{
+			}
+			else
+			{
+				yaw = (float)(CAMERA_SPEED * dt);
+				Mtx44 rotation;
+				rotation.SetToRotation(yaw, 0, 1, 0);
+				view = rotation * view;
+				up = rotation * up;
+			}
 		}
 		if (Application::IsKeyPressed(VK_RIGHT))
 		{
-			//if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-			//{
-			//}
-			//else
-			//{
-			yaw = (float)(-CAMERA_SPEED * dt);
-			Mtx44 rotation;
-			rotation.SetToRotation(yaw, 0, 1, 0);
-			view = rotation * view;
-			up = rotation * up;
-			//}
+			if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+			{
+			}
+			else
+			{
+				yaw = (float)(-CAMERA_SPEED * dt);
+				Mtx44 rotation;
+				rotation.SetToRotation(yaw, 0, 1, 0);
+				view = rotation * view;
+				up = rotation * up;
+			}
 		}
 		if (Application::IsKeyPressed(VK_UP))
 		{
-			//if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
-			//{
-			//}
-			//else
-			//{
-			pitch = (float)(CAMERA_SPEED * dt);
-			right.y = 0;
-			right.Normalize();
-			up = right.Cross(view).Normalized();
+			if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+			{
+			}
+			else
+			{
+				pitch = (float)(CAMERA_SPEED * dt);
+				right.y = 0;
+				right.Normalize();
+				up = right.Cross(view).Normalized();
 
-			Mtx44 rotation;
-			rotation.SetToRotation(pitch, right.x, right.y, right.z);
-			view = rotation * view;
-			//}
+				Mtx44 rotation;
+				rotation.SetToRotation(pitch, right.x, right.y, right.z);
+				view = rotation * view;
+			}
 		}
 		if (Application::IsKeyPressed(VK_DOWN))
 		{
-			//if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
-			//{
-			//}
-			//else
-			//{
-			pitch = (float)(-CAMERA_SPEED * dt);
-			right.y = 0;
-			right.Normalize();
-			up = right.Cross(view).Normalized();
+			if (Application::IsKeyPressed(VK_RIGHT) || Application::IsKeyPressed(VK_LEFT))
+			{
+			}
+			else
+			{
+				pitch = (float)(-CAMERA_SPEED * dt);
+				right.y = 0;
+				right.Normalize();
+				up = right.Cross(view).Normalized();
 
-			Mtx44 rotation;
-			rotation.SetToRotation(pitch, right.x, right.y, right.z);
-			view = rotation * view;
-			//}
+				Mtx44 rotation;
+				rotation.SetToRotation(pitch, right.x, right.y, right.z);
+				view = rotation * view;
+			}
 		}
 	}
 
