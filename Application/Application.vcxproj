@@ -88,6 +88,7 @@
     <ClCompile Include="Source\Asteroid2.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
+    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\PShipCamera.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />
@@ -95,6 +96,11 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\PlayerShip.cpp" />
+    <ClCompile Include="Source\ShipDTP.cpp" />
+    <ClCompile Include="Source\ShipDTPEnemies.cpp" />
+    <ClCompile Include="Source\ShipDTPHUD.cpp" />
+    <ClCompile Include="Source\ShipDTPpew.cpp" />
+    <ClCompile Include="Source\ShipDTPwave.cpp" />
     <ClCompile Include="Source\ShipRaceHUD.cpp" />
     <ClCompile Include="Source\ShipRace.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -108,6 +114,7 @@
     <ClInclude Include="Source\Asteroid.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Enemy.h" />
+    <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\PshipCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\Light.h" />
@@ -118,6 +125,7 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\PlayerShip.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\ShipDTP.h" />
     <ClInclude Include="Source\ShipRace.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\TpCamera.h" />

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "ShipRace.h"
+#include "ShipDTP.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
