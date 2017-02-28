@@ -7,7 +7,9 @@ PlayerShip::PlayerShip()
 PlayerShip::PlayerShip(Vector3 pos, int hp,int ey, int oil, int sp)
 {
 	health = hp;
-	position = pos;
+	position.x = pos.x;
+	position.y = pos.y - 7;
+	position.z = pos.z +13;
 	energy = ey;
 	fuel = oil;
 	speed = sp;
@@ -24,7 +26,9 @@ PlayerShip::~PlayerShip()
 void PlayerShip::InitPlayerShip(Vector3 pos, int hp, int ey, int oil, int sp)
 {
 	health = hp;
-	position = pos;
+	position.x = pos.x;
+	position.y = pos.y - 7;
+	position.z = pos.z + 13;	
 	energy = ey;
 	fuel = oil;
 	speed = sp;

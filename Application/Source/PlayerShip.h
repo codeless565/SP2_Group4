@@ -7,6 +7,8 @@ class PlayerShip
 {
 private:
 	int health;			// HP hitPoints
+	float energy;		// Ammo
+	float fuel;			// Fuel
 	bool dead;
 	bool fuel_depleted; 
 	float speed;		
@@ -16,8 +18,6 @@ private:
 
 public:	
 	Vector3 position;	// Position
-	float energy;		// Ammo
-	float fuel;			// Fuel
 
 	PlayerShip();
 	PlayerShip(Vector3 pos, int hp,int ey, int oil, int sp);
