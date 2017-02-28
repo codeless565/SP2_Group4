@@ -14,9 +14,6 @@ using std::endl;
 //Initialise the asteroids
 void ShipRace::InitAsteroidField()
 {
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//testfont.tga");
-
 	meshList[ASTEROID1] = MeshBuilder::GenerateOBJ("Asteroid1", "OBJ//Asteroid1.obj");
 	meshList[ASTEROID1]->textureID = LoadTGA("Image//Asteroid_red.tga");
 
@@ -166,11 +163,6 @@ void ShipRace::RenderAsteroidField()
 			RenderMesh(meshList[ASTEROID1], false);
 			modelStack.PopMatrix();
 		}
-	}
-
-	if (hit == true)
-	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "HIT", Color(0, 1, 0), 6, 5, 4);
 	}
 }
 //Set all the params of the asteroids
