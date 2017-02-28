@@ -15,24 +15,26 @@ private:
 	Vector3 Rotation;		//asteroids rotation
 	int Speed;				//asteroids speed
 	int max_dist;			//maximum distance the object can travel
-	unsigned int amt;		//number of asteroids
 	bool Rev;				//asteroids curr direction
-	int bouncechecktimer;
 
 public:
-	void InitField(unsigned amt);	//Initialize the Asteroid values
-	void RNG_Pos();					//generate a random position
-	void RNG_Rotation();
-	void RNG_Speed();
-	void CheckCollision();			//Checks Collsion with Asteroid
+	Asteroid();
+	Asteroid(Vector3 Pos, Vector3 Curr, Vector3 Rotation, int Speed, int max_dist, bool rev);
+	~Asteroid();
+
+	void RNGEverything();	//randomly generate all the asteroid's pos, rotation, speed
+	void RNG_Pos();			//generate a random position
+	void RNG_Rotation();	//generate a rotation
+	void RNG_Speed();		//generate a speed
+	void CheckPlayerCollision(Vector3 Player);	//Checks Collsion against player
+	void CheckEnemyCollision(Vector3 Enemy);	//Checks Collsion against enemy
 
 	//Getter
-	void getPos();
-	void getCurr();
-	void getRotation();
-	void getSpeed();
-	void getRev();
-	void getAmount();
+	Vector3 getPos();
+	Vector3 getCurr();
+	Vector3 getRotation();
+	int getSpeed();
+	bool getRev();
 };
 
 #endif

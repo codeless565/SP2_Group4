@@ -95,7 +95,7 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\PlayerShip.cpp" />
-    <ClCompile Include="Source\ShipHUD.cpp" />
+    <ClCompile Include="Source\ShipRaceHUD.cpp" />
     <ClCompile Include="Source\ShipRace.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SpaceStation.cpp" />

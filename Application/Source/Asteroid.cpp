@@ -1,13 +1,27 @@
 #include "Asteroid.h"
 
-void Asteroid::InitField(unsigned amt)	//Initialize the Asteroid values
+Asteroid::Asteroid()
 {
-	this->amt = amt;
+	Asteroid({ 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, 0, 0, false);
+}
+Asteroid::Asteroid(Vector3 Pos, Vector3 Curr, Vector3 Rotation, int Speed, int max_dist, bool rev)
+{
+	this->Pos = Pos;
+	this->Curr = Curr;
+	this->Rotation = Rotation;
+	this->Speed = Speed;
+	this->max_dist = max_dist;
+	Rev = rev;
+}
+Asteroid::~Asteroid()
+{
+
+}
+void Asteroid::RNGEverything()	//Initialize the Asteroid values
+{
 	RNG_Pos();
 	RNG_Rotation();
 	RNG_Speed();
-	Rev = false;
-	max_dist = 90;
 }
 void Asteroid::RNG_Pos()		//generate asteroids
 {
@@ -39,21 +53,28 @@ void Asteroid::RNG_Speed()
 
 	Speed = speed;
 }
-
-void Asteroid::CheckCollision()		//Checks Collsion with Asteroid
+void Asteroid::CheckPlayerCollision(Vector3 Player)		//Checks Collsion with Asteroid
 {
+	
 }
-
 //Getter
-void Asteroid::getPos()
-{}
-void Asteroid::getCurr()
-{}
-void Asteroid::getRotation()
-{}
-void Asteroid::getSpeed()
-{}
-void Asteroid::getRev()
-{}
-void Asteroid::getAmount()
-{}
+Vector3 Asteroid::getPos()
+{
+	return Pos;
+}
+Vector3 Asteroid::getCurr()
+{
+	return Curr;
+}
+Vector3 Asteroid::getRotation()
+{
+	return Rotation;
+}
+int Asteroid::getSpeed()
+{
+	return Speed;
+}
+bool Asteroid::getRev()
+{
+	return Rev;
+}
