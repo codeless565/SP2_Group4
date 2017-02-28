@@ -73,6 +73,8 @@ void ShipRace::Init()
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
 	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
+	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
 	//Initialize camera settings
 	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
@@ -124,14 +126,13 @@ void ShipRace::Init()
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
 
-	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//BNMachine.tga");
+	meshList[MISSION_TEXT] = MeshBuilder::GenerateText("Mission", 16, 16);
+	meshList[MISSION_TEXT]->textureID = LoadTGA("Image//Mishmash_BRK.tga");
 
 	InitShipHUD();
 	InitSpaceStation();
-	InitAsteroidField();
-
-
+	//InitAsteroidField();
+	
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
 	light[0].position.Set(0, 0, 0);
@@ -163,15 +164,17 @@ void ShipRace::Init()
 	glUniform1f(m_parameters[U_LIGHT0_KL], light[0].kL);
 	glUniform1f(m_parameters[U_LIGHT0_KQ], light[0].kQ);
 
+	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+
 	Mtx44 projection;
 	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 50000.f);
 	projectionStack.LoadMatrix(projection);
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+
 
 	playership.InitPlayerShip(camera.position, 100, 100, 100, 20);
 	//playership.InitAOZone({ -8000, -8000, -2500 }, { 9000, 8000, -500 });
-	playership.InitAOZone({ -10000, -1000, -2500 }, { 90000, 2000, -500 });
+	playership.InitAOZone({ -10000, -1000, -2500 }, { 110000, 1200, -500 });
 
 	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y + 105, playership.position.z + 298 }, 300, 100, 40, 100, 15));
 	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y - 193, playership.position.z + 306 }, 300, 100, 40, 100, 15));
@@ -191,120 +194,126 @@ void ShipRace::Update(double dt)
 {
 	framerate = 1 / dt;
 
-	float LSPEED = 10.f;
-	if (Application::IsKeyPressed('1')) //enable back face culling
-		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2')) //disable back face culling
-		glDisable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
-	if (Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
-
-
-	if (Application::IsKeyPressed('I'))
-		light[0].position.z -= (float)(LSPEED * dt);
-	if (Application::IsKeyPressed('K'))
-		light[0].position.z += (float)(LSPEED * dt);
-	if (Application::IsKeyPressed('J'))
-		light[0].position.x -= (float)(LSPEED * dt);
-	if (Application::IsKeyPressed('L'))
-		light[0].position.x += (float)(LSPEED * dt);
-	if (Application::IsKeyPressed('O'))
-		light[0].position.y -= (float)(LSPEED * dt);
-	if (Application::IsKeyPressed('P'))
-		light[0].position.y += (float)(LSPEED * dt);
-
-	if (Application::IsKeyPressed('5'))
+	if (mission_Breifed)
 	{
-		light[0].type = Light::LIGHT_POINT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-	}
-	else if (Application::IsKeyPressed('6'))
-	{
-		light[0].type = Light::LIGHT_DIRECTIONAL;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-	}
-	else if (Application::IsKeyPressed('7'))
-	{
-		light[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-	}
+		float LSPEED = 10.f;
+		if (Application::IsKeyPressed('1')) //enable back face culling
+			glEnable(GL_CULL_FACE);
+		if (Application::IsKeyPressed('2')) //disable back face culling
+			glDisable(GL_CULL_FACE);
+		if (Application::IsKeyPressed('3'))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
+		if (Application::IsKeyPressed('4'))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-	if (!captured)
-	{//SpaceStation
-		UpdateSpaceStation(dt);
-		UpdateAsteroidField(dt);
 
-		for (int i = 0; i < enemyship.size(); i++)
+		if (Application::IsKeyPressed('I'))
+			light[0].position.z -= (float)(LSPEED * dt);
+		if (Application::IsKeyPressed('K'))
+			light[0].position.z += (float)(LSPEED * dt);
+		if (Application::IsKeyPressed('J'))
+			light[0].position.x -= (float)(LSPEED * dt);
+		if (Application::IsKeyPressed('L'))
+			light[0].position.x += (float)(LSPEED * dt);
+		if (Application::IsKeyPressed('O'))
+			light[0].position.y -= (float)(LSPEED * dt);
+		if (Application::IsKeyPressed('P'))
+			light[0].position.y += (float)(LSPEED * dt);
+
+		if (Application::IsKeyPressed('5'))
 		{
-			enemyship[i].chasing(dt);
+			light[0].type = Light::LIGHT_POINT;
+			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+		}
+		else if (Application::IsKeyPressed('6'))
+		{
+			light[0].type = Light::LIGHT_DIRECTIONAL;
+			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+		}
+		else if (Application::IsKeyPressed('7'))
+		{
+			light[0].type = Light::LIGHT_SPOT;
+			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 		}
 
-		CheckAsteroidCollision();
-		CheckEnemyCollision();
+		if (!captured)
+		{//SpaceStation
+			UpdateSpaceStation(dt);
+			UpdateAsteroidField(dt);
 
-		UpdateShipHUD(dt);
-
-		if (!playership.isDead() && !hyperDrive)
-		{
-			camera.Update(dt, playership.boostable(), hyperDrive);
-			//player
-			if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
+			for (int i = 0; i < enemyship.size(); i++)
 			{
-				if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-				{
-				}
-				else
-				{
-					PShipRotateHori += (float)(camera.yaw);
-				}
-			}
-			else if (Application::IsKeyPressed(VK_RIGHT) && !Application::IsKeyPressed(VK_LEFT))
-			{
-				if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
-				{
-				}
-				else
-				{
-					PShipRotateHori += (float)(camera.yaw);
-				}
+				if (enemyship[i].position.x < playership.position.x + 3500)
+					enemyship[i].chasing(dt);
 			}
 
-			if (Application::IsKeyPressed(VK_UP) && !Application::IsKeyPressed(VK_DOWN))
+			CheckAsteroidCollision();
+			CheckEnemyCollision();
+
+			UpdateShipHUD(dt);
+
+			if (!playership.isDead() && !hyperDrive)
 			{
-				if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+				camera.Update(dt, playership.boostable(), hyperDrive);
+				//player
+				if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
 				{
+					if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+					{
+					}
+					else
+					{
+						PShipRotateHori += (float)(camera.yaw);
+					}
 				}
-				else
+				else if (Application::IsKeyPressed(VK_RIGHT) && !Application::IsKeyPressed(VK_LEFT))
 				{
-					PShipRotateVerti -= (float)(camera.pitch);
+					if (Application::IsKeyPressed(VK_UP) || Application::IsKeyPressed(VK_DOWN))
+					{
+					}
+					else
+					{
+						PShipRotateHori += (float)(camera.yaw);
+					}
 				}
+
+				if (Application::IsKeyPressed(VK_UP) && !Application::IsKeyPressed(VK_DOWN))
+				{
+					if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+					{
+					}
+					else
+					{
+						PShipRotateVerti -= (float)(camera.pitch);
+					}
+				}
+				else if (!Application::IsKeyPressed(VK_UP) && Application::IsKeyPressed(VK_DOWN))
+				{
+					if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
+					{
+					}
+					else
+					{
+						PShipRotateVerti -= (float)(camera.pitch);
+					}
+				}
+				position_x = camera.position.x;
+				position_y = camera.position.y;
+				position_z = camera.position.z;
 			}
-			else if (!Application::IsKeyPressed(VK_UP) && Application::IsKeyPressed(VK_DOWN))
+
+			if (!hyperDrive)
+				playership.setPos(camera.position);
+			else
 			{
-				if (Application::IsKeyPressed(VK_LEFT) || Application::IsKeyPressed(VK_RIGHT))
-				{
-				}
-				else
-				{
-					PShipRotateVerti -= (float)(camera.pitch);
-				}
+				position_x += (float)(500 * dt);
+				GameClearTimer++;
 			}
-			position_x = camera.position.x;
-			position_y = camera.position.y;
-			position_z = camera.position.z;
+
 		}
-
-		if (!hyperDrive)
-			playership.setPos(camera.position);
-		else
-		{
-			position_x += (float)(500 * dt);
-		}
-
-		GameClearTimer++;
 	}
+	else
+		UpdateMissionBrief();
 }
 
 void ShipRace::Render()
@@ -341,76 +350,86 @@ void ShipRace::Render()
 
 	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-	
-	RenderMesh(meshList[GEO_AXES], false);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
-	modelStack.Rotate(90, 0, 1, 0);
-	RenderSkybox();
-	modelStack.PopMatrix();
+	//=================================== Rendering OBJ ====================================================
 
-	// PlayerShip
-	modelStack.PushMatrix();
-	modelStack.Translate(position_x, position_y, position_z);
-	modelStack.Rotate(PShipRotateHori, 0, 1, 0);
-	modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
+	if (mission_Breifed)
 	{
+		RenderMesh(meshList[GEO_AXES], false);
+
 		modelStack.PushMatrix();
-		modelStack.Translate(0, -7, 13);
-		modelStack.Scale(5, 5, 5);
+		modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
+		modelStack.Rotate(90, 0, 1, 0);
+		RenderSkybox();
+		modelStack.PopMatrix();
+
+		// PlayerShip
+		modelStack.PushMatrix();
+		modelStack.Translate(position_x, position_y, position_z);
+		modelStack.Rotate(PShipRotateHori, 0, 1, 0);
+		modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
 		{
 			modelStack.PushMatrix();
-			RenderMesh(meshList[PLAYERSHIP_BODY], false);
-			modelStack.PopMatrix();
+			modelStack.Translate(0, -7, 13);
+			modelStack.Scale(5, 5, 5);
+			{
+				modelStack.PushMatrix();
+				RenderMesh(meshList[PLAYERSHIP_BODY], false);
+				modelStack.PopMatrix();
 
-			modelStack.PushMatrix();
-			RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+				modelStack.PushMatrix();
+				RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+				modelStack.PopMatrix();
+			}
 			modelStack.PopMatrix();
 		}
 		modelStack.PopMatrix();
-	}
-	modelStack.PopMatrix();
 
-	// Space Station
-	RenderSpaceStation();
+		// Space Station
+		RenderSpaceStation();
 
-	// EnemyShip
-	for (int i = 0; i < enemyship.size(); i++)
-	{
-		Vector3 distance = playership.position - enemyship[i].position;
-
-		if (distance.Length() <= 2000 && !enemyship[i].isDead())
+		// EnemyShip
+		for (int i = 0; i < enemyship.size(); i++)
 		{
-			modelStack.PushMatrix();
-			modelStack.Translate(enemyship[i].position.x, enemyship[i].position.y, enemyship[i].position.z);
-			modelStack.Rotate(90, 0, 1, 0);
-			modelStack.Scale(20, 20, 20);
-			RenderMesh(meshList[ENEMYSHIP], false);
-			modelStack.PopMatrix();
+			Vector3 distance = playership.position - enemyship[i].position;
+
+			if (distance.Length() <= 8000 && !enemyship[i].isDead())
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate(enemyship[i].position.x, enemyship[i].position.y, enemyship[i].position.z);
+				modelStack.Rotate(90, 0, 1, 0);
+				modelStack.Scale(20, 20, 20);
+				RenderMesh(meshList[ENEMYSHIP], false);
+				modelStack.PopMatrix();
+			}
+		}
+
+		RenderAsteroidField();
+
+		RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
+		std::string s = std::to_string(framerate);
+		RenderTextOnScreen(meshList[GEO_TEXT], s, Color(0, 1, 0), 2, 3.5f, 0);
+
+		//dead
+		if (playership.isDead() || captured)
+		{
+			RenderQuadOnScreen(meshList[HUD_GAMEOVER], 100, 100, 40, 30);
+			RenderTextOnScreen(meshList[GEO_TEXT], "GAME OVER", Color(1, 0, 0), 6, 4.f, 4.5f);
+		}
+		//HDrive
+		if (!hyperDrive)
+			RenderShipHUD();
+		else
+			RenderQuadOnScreen(meshList[HUD_HDRIVE], hyperdriveScale, hyperdriveScale, 40, 30);
+		//MISSION CLEAR
+		if (hyperDrive && GameClearTimer >= 200)
+		{
+			RenderQuadOnScreen(meshList[HUD_BLACK], 80, 60, 40, 30);
+			RenderTextOnScreen(meshList[GEO_TEXT], "MISSION CLEAR", Color(0.9f, 0.9f, 0.9f), 6.f, 2.9f, 5.5f);
 		}
 	}
-
-	RenderAsteroidField();
-
-	RenderTextOnScreen(meshList[GEO_TEXT2], "FPS", Color(0, 1, 0), 2, 0, 0);
-	std::string s = std::to_string(framerate);
-	RenderTextOnScreen(meshList[GEO_TEXT2], s, Color(0, 1, 0), 2, 3.5f, 0);
-	
-	if (hyperDrive && GameClearTimer >= 1200)
-		RenderTextOnScreen(meshList[GEO_TEXT2], "MISSION CLEAR", Color(1, 0, 0), 5.f, 1.75f, 5.5f);
-
-	if (!hyperDrive)
-		RenderShipHUD();
 	else
-		RenderQuadOnScreen(meshList[HUD_HDRIVE], hyperdriveScale, hyperdriveScale, 40, 30);
-	
-	//dead
-	if (playership.isDead() || captured)
-	{
-		RenderQuadOnScreen(meshList[HUD_GAMEOVER], 100, 100, 40, 30);
-		RenderTextOnScreen(meshList[GEO_TEXT2], "GAME OVER", Color(1, 0, 0), 6, 2.5f, 4.5f);
-	}
+		RenderMissionBrief();
 }
 
 void ShipRace::RenderSkybox()
@@ -610,7 +629,7 @@ void ShipRace::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.6f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 

@@ -53,6 +53,10 @@ class ShipRace : public Scene
 		HUD_HDRIVE,
 		HUD_GAMEOVER,
 
+		//MISSION Brief
+		HUD_BLACK,
+		HUD_BOOTUP,
+
 		SPACESTATION_TOP,
 		SPACESTATION_MID,
 		SPACESTATION_BOTTOM,
@@ -73,7 +77,7 @@ class ShipRace : public Scene
 
 		//TEXT
 		GEO_TEXT,
-		GEO_TEXT2,
+		MISSION_TEXT,
 
 		// actions
 
@@ -139,26 +143,39 @@ private:
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	
 	float framerate;
+	
+	//MissionText
+	void RenderMissionBrief();
+	void UpdateMissionBrief();
+	bool mission_Breifed;
+	float mission_brief_Time;
+	float text_colorBooting;		//for flashing the booting... text
+	float text_colorFlashing;
+	float bootUpBar;				//For scaling the boot up bar
 
 	//PlayerShip
 	PlayerShip playership;
 	float PShipEngine, PShipRotateHori, PShipRotateVerti;
-	float bounceT;
-	float Compass;
-	int fuelPercentage;
-	std::string fuel;
-	std::string zt1;
-	std::vector <Vector3> health;
-	float zoneOutTime;
+	float position_x, position_y, position_z;	//position of the player
 
-	void InitShipHUD();
-	void UpdateShipHUD(double dt);
-	void RenderShipHUD();
+	//HUD
+	float bounceT;			
+	float Compass;			//compass direction
+	int fuelPercentage;		//Fuel % left
+	std::string fuel;		//display fuel % in numeral
+	float fuelG;			//green element to the number
+	float fuelR;			//red element to the number
+	std::string zt1;		//zone out timer
+	std::vector <Vector3> health;	//position of the hp blocks on screen
+	float zoneOutTime;		//time until player is zoned out
 
-	bool hyperDrive;
-	int hyperdriveScale;
-	int safezone_X;
-	float position_x, position_y, position_z;
+	void InitShipHUD();		//Inititalise the ShipHUD
+	void UpdateShipHUD(double dt);	//Updates the ShipHUD
+	void RenderShipHUD();	//Renders the ShipHUD
+		
+	bool hyperDrive;		//check if hyperdrive engaged
+	int hyperdriveScale;	//HD Fx
+	int safezone_X;			//SafeZone location
 
 	//EnemyShip
 	std::vector <Enemy> enemyship;
