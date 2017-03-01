@@ -37,9 +37,9 @@ void SHIPDTP::RenderEnemyField()
 		enemyships[i].z = z;
 	}
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "Enemies remaining: ", Color(0, 1, 0), 3, 0, 18);
+	RenderTextOnScreen(meshList[BNM_TEXT], "Enemies remaining: ", Color(0, 1, 0), 3, 0, 18);
 	std::string enemyamt = std::to_string(amt);
-	RenderTextOnScreen(meshList[GEO_TEXT2], enemyamt, Color(0, 1, 0), 3, 18, 18);
+	RenderTextOnScreen(meshList[BNM_TEXT], enemyamt, Color(0, 1, 0), 3, 18, 18);
 }
 
 void SHIPDTP::RNGEnemyPos()

@@ -76,15 +76,9 @@ void ShipRace::Init()
 	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
 	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
-	//Initialize camera settings
-	//camera.Init(Vector3(0, 500, 0), Vector3(0, 500, 1), Vector3(0, 1, 0));
-
 	camera.Init(Vector3(-9000, 100, -1700), Vector3(10, 100, -1700), Vector3(0, 10, 0));
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-
-	//meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0, 0, 0), 1.0f, 1.0f);
-	//meshList[GEO_QUAD]->textureID = LoadTGA("Image//color2.tga");
 
 	meshList[SPACE_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1));
 	meshList[SPACE_FRONT]->textureID = LoadTGA("Image//SpaceFront.tga");
@@ -119,19 +113,16 @@ void ShipRace::Init()
 	meshList[ENEMYSHIP] = MeshBuilder::GenerateOBJ("EnemyShip", "OBJ//EnemyShip.obj");
 	meshList[ENEMYSHIP]->textureID = LoadTGA("Image//EnemyShip.tga");
 
-	//meshList[GEO_LAMPLIGHT] = MeshBuilder::GenerateOBJ("lamplight", "OBJ//lamplight.obj");
-	//meshList[GEO_LAMPLIGHT]->textureID = LoadTGA("Image//lamplight.tga");
-
 	// GENERAL USE
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
+	meshList[BNM_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[BNM_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
 
 	meshList[MISSION_TEXT] = MeshBuilder::GenerateText("Mission", 16, 16);
 	meshList[MISSION_TEXT]->textureID = LoadTGA("Image//Mishmash_BRK.tga");
 
 	InitShipHUD();
 	InitSpaceStation();
-	//InitAsteroidField();
+	InitAsteroidField();
 	
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
@@ -406,15 +397,15 @@ void ShipRace::Render()
 
 		RenderAsteroidField();
 
-		RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
+		RenderTextOnScreen(meshList[BNM_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
 		std::string s = std::to_string(framerate);
-		RenderTextOnScreen(meshList[GEO_TEXT], s, Color(0, 1, 0), 2, 3.5f, 0);
+		RenderTextOnScreen(meshList[BNM_TEXT], s, Color(0, 1, 0), 2, 3.5f, 0);
 
 		//dead
 		if (playership.isDead() || captured)
 		{
 			RenderQuadOnScreen(meshList[HUD_GAMEOVER], 100, 100, 40, 30);
-			RenderTextOnScreen(meshList[GEO_TEXT], "GAME OVER", Color(1, 0, 0), 6, 4.f, 4.5f);
+			RenderTextOnScreen(meshList[BNM_TEXT], "GAME OVER", Color(1, 0, 0), 6, 4.f, 4.5f);
 		}
 		//HDrive
 		if (!hyperDrive)
@@ -425,7 +416,7 @@ void ShipRace::Render()
 		if (hyperDrive && GameClearTimer >= 200)
 		{
 			RenderQuadOnScreen(meshList[HUD_BLACK], 80, 60, 40, 30);
-			RenderTextOnScreen(meshList[GEO_TEXT], "MISSION CLEAR", Color(0.9f, 0.9f, 0.9f), 6.f, 2.9f, 5.5f);
+			RenderTextOnScreen(meshList[BNM_TEXT], "MISSION CLEAR", Color(0.9f, 0.9f, 0.9f), 6.f, 2.9f, 5.5f);
 		}
 	}
 	else

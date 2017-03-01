@@ -74,29 +74,29 @@ void SHIPDTP::UpdateWave()
 
 void SHIPDTP::RenderWave()
 {
-	RenderTextOnScreen(meshList[GEO_TEXT], "Wave: ", Color(0, 1, 0), 3, 0, 19);
+	RenderTextOnScreen(meshList[BNM_TEXT], "Wave: ", Color(0, 1, 0), 3, 0, 19);
 
 	if (!w1)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "1", Color(0, 1, 0), 3, 5, 19);
+		RenderTextOnScreen(meshList[BNM_TEXT], "1", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && !w2)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "2", Color(0, 1, 0), 3, 5, 19);
+		RenderTextOnScreen(meshList[BNM_TEXT], "2", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && w2 && !w3)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "3", Color(0, 1, 0), 3, 5, 19);
+		RenderTextOnScreen(meshList[BNM_TEXT], "3", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && w2 && w3 && !w4)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "4", Color(0, 1, 0), 3, 5, 19);
+		RenderTextOnScreen(meshList[BNM_TEXT], "4", Color(0, 1, 0), 3, 5, 19);
 	}
 	else
 	{
 		if (w1 && w2 && w3 && w4 && !w5)
 		{
-			RenderTextOnScreen(meshList[GEO_TEXT2], "5", Color(0, 1, 0), 3, 5, 19);
+			RenderTextOnScreen(meshList[BNM_TEXT], "5", Color(0, 1, 0), 3, 5, 19);
 		}
 	}
 }

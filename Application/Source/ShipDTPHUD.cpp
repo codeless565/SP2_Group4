@@ -126,8 +126,8 @@ void SHIPDTP::RenderShipHUD()
 	{
 		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.getFuel(), 3.3f, 12.5f + 17.5f * playership.getFuel() / 100);
 	}
-	RenderTextOnScreen(meshList[GEO_TEXT2], fuel, Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2, 0.f, 4.5f);
-	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2.5f, 2.05f, 3.55f);
+	RenderTextOnScreen(meshList[BNM_TEXT], fuel, Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2, 0.f, 4.5f);
+	RenderTextOnScreen(meshList[BNM_TEXT], "%", Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2.5f, 2.05f, 3.55f);
 	//====================================== Energy =======================================================
 	RenderQuadOnScreen(meshList[HUD_ENERGYFRAME], 70, 100, 76.8f, 30);
 	if (playership.shootable())
@@ -138,26 +138,26 @@ void SHIPDTP::RenderShipHUD()
 	{
 		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.getEnergy(), 76.8f, 12.5f + 17.5f * playership.getEnergy() / 100);
 	}
-	RenderTextOnScreen(meshList[GEO_TEXT2], energy, Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2, 36.8f, 4.5f);
-	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2.5f, 31.45f, 3.55f);
+	RenderTextOnScreen(meshList[BNM_TEXT], energy, Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2, 36.8f, 4.5f);
+	RenderTextOnScreen(meshList[BNM_TEXT], "%", Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2.5f, 31.45f, 3.55f);
 	//======================================== HP =========================================================
 	for (float i = 0; i < playership.getHealth() / 10; i++)
 		RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);
 
 	if (playership.getHealth() >= 50 && playership.getHealth() <= 100 && bouncechecktimer <= 50)
-		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Damaged", Color(1, 1, 0), 2, 27.5f, 2.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Hull Damaged", Color(1, 1, 0), 2, 27.5f, 2.f);
 	if (playership.getHealth() > 20 && playership.getHealth() < 50 && bouncechecktimer <= 99 && bouncechecktimer % 15 != 0)
-		RenderTextOnScreen(meshList[GEO_TEXT2], "Hull Critical", Color(1, 0.4f, 0), 2, 27.5f, 2.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Hull Critical", Color(1, 0.4f, 0), 2, 27.5f, 2.f);
 	if (playership.getHealth() > 0 && playership.getHealth() <= 20 && bouncechecktimer % 10 != 0)
-		RenderTextOnScreen(meshList[GEO_TEXT2], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "WARNING", Color(1, 0, 0), 3, 18.5f, 1.f);
 	//===================================== ZoneOut ======================================================
 	if (playership.isZoneOut(zoneOutTime))
 	{
 		RenderQuadOnScreen(meshList[HUD_ZONEOUT], 100, 100, 40, 30);
 		if (bouncechecktimer % 18 != 0)
-			RenderTextOnScreen(meshList[GEO_TEXT2], "Return to Mission Area!", Color(1, 0, 0), 3.5f, 0.35f, 8.4f);
+			RenderTextOnScreen(meshList[BNM_TEXT], "Return to Mission Area!", Color(1, 0, 0), 3.5f, 0.35f, 8.4f);
 
-		RenderTextOnScreen(meshList[GEO_TEXT2], zt1, Color(1, 0, 0), 3, 13.f, 8.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], zt1, Color(1, 0, 0), 3, 13.f, 8.f);
 	}
 	//===================================================================================================
 }

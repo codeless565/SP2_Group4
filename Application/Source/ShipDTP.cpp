@@ -111,11 +111,8 @@ void SHIPDTP::Init()
 	meshList[GEO_PLANET]->textureID = LoadTGA("Image//planet.tga");
 
 	// GENERAL USE
-	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
-
-	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//BNMachine.tga");
+	meshList[BNM_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
+	meshList[BNM_TEXT]->textureID = LoadTGA("Image//BNMachine.tga");
 
 	light[0].type = Light::LIGHT_SPOT;
 	//light[0].position.Set(225, 3, 225); // first building light
@@ -411,22 +408,22 @@ void SHIPDTP::Render()
 	//// TEXT FOR GAME
 	////
 	/////////////////////////////////////////////////////////////////////////////////
-	RenderTextOnScreen(meshList[GEO_TEXT], "Planet Health: ", Color(0, 1, 0), 3, 0, 0);
+	RenderTextOnScreen(meshList[BNM_TEXT], "Planet Health: ", Color(0, 1, 0), 3, 0, 0);
 	std::string health = std::to_string(planethp);
-	RenderTextOnScreen(meshList[GEO_TEXT2], health, Color(0, 1, 0), 3, 14, 0);
+	RenderTextOnScreen(meshList[BNM_TEXT], health, Color(0, 1, 0), 3, 14, 0);
 
 
 	if (!w5)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT], "Fleet health: ", Color(0, 1, 0), 3, 0, 1);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Fleet health: ", Color(0, 1, 0), 3, 0, 1);
 		std::string fthp = std::to_string(fleethp);
-		RenderTextOnScreen(meshList[GEO_TEXT2], fthp, Color(0, 1, 0), 3, 14, 1);
+		RenderTextOnScreen(meshList[BNM_TEXT], fthp, Color(0, 1, 0), 3, 14, 1);
 	}
 
 
 	//if (gameover)
 	//{
-	//	RenderTextOnScreen(meshList[GEO_TEXT], "YOU DED", Color(0, 1, 0), 3, 10, 10);
+	//	RenderTextOnScreen(meshList[BNM_TEXT], "YOU DED", Color(0, 1, 0), 3, 10, 10);
 	//}
 
 }

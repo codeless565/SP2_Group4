@@ -52,8 +52,7 @@ class SHIPDTP : public Scene
 		GEO_PLANET,
 
 		// TEXT
-		GEO_TEXT,
-		GEO_TEXT2,
+		BNM_TEXT,
 
 		// actions
 

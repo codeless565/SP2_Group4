@@ -205,13 +205,13 @@ void ShipRace::RenderShipHUD()
 	{
 		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.getFuel(), 3.3f, 12.5f + 17.5f * playership.getFuel() / 100);
 	}
-	RenderTextOnScreen(meshList[GEO_TEXT], fuel, Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2, 0.5f, 4.5f);
-	RenderTextOnScreen(meshList[GEO_TEXT], "%", Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2.5f, 2.f, 3.55f);
+	RenderTextOnScreen(meshList[BNM_TEXT], fuel, Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2, 0.5f, 4.5f);
+	RenderTextOnScreen(meshList[BNM_TEXT], "%", Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2.5f, 2.f, 3.55f);
 
 	//Energy
 	RenderQuadOnScreen(meshList[HUD_ENERGYFRAME], 70, 100, 76.8f, 30);	
-	RenderTextOnScreen(meshList[GEO_TEXT], "0", Color(1, 0, 0), 2, 37.5f, 4.5f);
-	RenderTextOnScreen(meshList[GEO_TEXT], "%", Color(1, 0, 0), 2.5f, 31.45f, 3.55f);
+	RenderTextOnScreen(meshList[BNM_TEXT], "0", Color(1, 0, 0), 2, 37.5f, 4.5f);
+	RenderTextOnScreen(meshList[BNM_TEXT], "%", Color(1, 0, 0), 2.5f, 31.45f, 3.55f);
 	//Compass
 
 	if (playership.position.x < safezone_X && dist_from_goal > 9000)
@@ -223,41 +223,41 @@ void ShipRace::RenderShipHUD()
 	if (overtaken)
 	{
 		std::string overtake = std::to_string(dist_overtake);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Don't let them catch you!", Color(1, 0, 0), 3.2f, 5.5f, 17.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Don't let them catch you!", Color(1, 0, 0), 3.2f, 5.5f, 17.f);
 		std::string time = std::to_string(captTime);
-		RenderTextOnScreen(meshList[GEO_TEXT], time, Color(1, 0, 0), 3.f, 12.7f, 17.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], time, Color(1, 0, 0), 3.f, 12.7f, 17.f);
 	}
 	//hyperdrive
 	if (playership.position.x > safezone_X)
 	{
 		if (bouncechecktimer % 18 != 0)
-			RenderTextOnScreen(meshList[GEO_TEXT], "Safe to use HyperDrive", Color(1, 1, 1), 3.5f, 5.f, 14.f);
+			RenderTextOnScreen(meshList[BNM_TEXT], "Safe to use HyperDrive", Color(1, 1, 1), 3.5f, 5.f, 14.f);
 	}	
 	if (nearGoal && dist_from_goal >= 5)
 	{
 		std::string goal = std::to_string(dist_from_goal);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Keep going!", Color(1, 1, 1), 3.5f, 8.5f, 14.f);
-		RenderTextOnScreen(meshList[GEO_TEXT], goal, Color(1, 1, 1), 3.5f, 10.f, 13.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Keep going!", Color(1, 1, 1), 3.5f, 8.5f, 14.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], goal, Color(1, 1, 1), 3.5f, 10.f, 13.f);
 	}
 	//hp
 	for (float i = 0; i < playership.getHealth() / 10; i++)
 		 RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);
 	
 	if (playership.getHealth() >= 50 && playership.getHealth() <= 100 && bouncechecktimer <= 50)
-		RenderTextOnScreen(meshList[GEO_TEXT], "Hull Damaged", Color(1, 1, 0), 2, 29.5f, 2.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Hull Damaged", Color(1, 1, 0), 2, 29.5f, 2.f);
 	if (playership.getHealth() > 20 && playership.getHealth() < 50 && bouncechecktimer <= 99 && bouncechecktimer % 15 != 0)
-		RenderTextOnScreen(meshList[GEO_TEXT], "Hull Critical", Color(1, 0.4f, 0), 2, 29.5f, 2.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "Hull Critical", Color(1, 0.4f, 0), 2, 29.5f, 2.f);
 	if (playership.getHealth() > 0 && playership.getHealth() <= 20 && bouncechecktimer % 10 != 0)
-		RenderTextOnScreen(meshList[GEO_TEXT], "WARNING", Color(1, 0, 0), 3, 20.f, 1.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], "WARNING", Color(1, 0, 0), 3, 20.f, 1.f);
 	
 	//zone out
 	if (playership.isZoneOut(zoneOutTime))
 	{
 		RenderQuadOnScreen(meshList[HUD_ZONEOUT], 100, 100, 40, 30);
 		if (bouncechecktimer % 18 != 0)
-			RenderTextOnScreen(meshList[GEO_TEXT], "Return to Mission Area!", Color(1, 0, 0), 3.5f, 4.6f, 8.4f);
+			RenderTextOnScreen(meshList[BNM_TEXT], "Return to Mission Area!", Color(1, 0, 0), 3.5f, 4.6f, 8.4f);
 
-		RenderTextOnScreen(meshList[GEO_TEXT], zt1 , Color(1, 0, 0), 3, 13.f, 8.f);
+		RenderTextOnScreen(meshList[BNM_TEXT], zt1 , Color(1, 0, 0), 3, 13.f, 8.f);
 	}
 }
 void ShipRace::UpdateMissionBrief()

@@ -31,13 +31,7 @@ class ShipRace : public Scene
 		SPACE_BACK,
 
 		//LIGHT
-
-		//SP Model
-		TEST_MODEL,
-		TEST_MODEL2,
-		TEST_MODEL3,
-		TEST_MODEL4,
-
+		
 		//Player
 		PLAYERSHIP_BODY,
 		PLAYERSHIP_ENGINE,
@@ -71,12 +65,9 @@ class ShipRace : public Scene
 		//Asteroids
 		ASTEROID1,
 		ASTEROID2,
-
 		
-		GEO_LAMPLIGHT,
-
 		//TEXT
-		GEO_TEXT,
+		BNM_TEXT,
 		MISSION_TEXT,
 
 		// actions
