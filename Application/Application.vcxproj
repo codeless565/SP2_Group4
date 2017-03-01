@@ -96,6 +96,7 @@
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\PlayerShip.cpp" />
+    <ClCompile Include="Source\GameOver.cpp" />
     <ClCompile Include="Source\ShipDTP.cpp" />
     <ClCompile Include="Source\ShipDTPEnemies.cpp" />
     <ClCompile Include="Source\ShipDTPHUD.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="Source\Asteroid.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Enemy.h" />
+    <ClInclude Include="Source\GameOver.h" />
     <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\PshipCamera.h" />
     <ClInclude Include="Source\GameObject.h" />
