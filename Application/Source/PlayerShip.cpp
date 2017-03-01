@@ -56,7 +56,7 @@ void PlayerShip::ship_idling()
 }
 void PlayerShip::ship_boosting()
 {
-	if (fuel != (fuel <= 0))
+	if (fuel > 0)
 		fuel--;
 
 	if (fuel <= 0)
@@ -107,6 +107,52 @@ bool PlayerShip::isDead()
 
 	return dead;
 }
+
+
+bool PlayerShip::shootable()
+{
+	energy_depletion();
+
+	if (energy_depleted)
+		return false;
+	else
+		return true;
+}
+void PlayerShip::weapon_idling()
+{
+	if (energy_depleted)
+		energy += 1.f;
+	else if (energy < 100)
+		energy += 0.5f;
+
+	if (energy >= 100)
+		energy = 100;
+}
+void PlayerShip::energy_depletion()
+{
+	if (energy <= 0)
+		energy_depleted = true;
+
+	if (energy_depleted && energy >= 100)
+		energy_depleted = false;
+}
+void PlayerShip::Shooting()
+{
+	energy_depletion();
+
+	if (energy > 0)
+	{
+		energy -= 10;
+	}
+	if (energy <= 0)
+	{
+		energy = 0;
+	}
+}
+
+
+
+
 //Getters
 Vector3 PlayerShip::getPos()
 {

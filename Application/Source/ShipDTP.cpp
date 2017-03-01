@@ -155,7 +155,7 @@ void SHIPDTP::Init()
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
  	
 	playership = PlayerShip({ camera.position.x, camera.position.y, camera.position.z },100, 100, 100, 0);
-	playership.InitAOZone({ -5000, -5000, -5000 },{ 5000, 5000, 5000 });
+	playership.InitAOZone({ -4800, -5000, -4000 },{ 5800, 5400, 5700 });
 
 	BShipEngine = 0;
 	PShipRotateHori = 0;
@@ -166,9 +166,9 @@ void SHIPDTP::Init()
 
 	fleethp = 50;
 	planethp = 15;
-	planet = { -2750, -1250, -1250 };
+	planet = { -7000, -7000, -7000 };
 
-	battleship = { 2760, 1250, 1250};
+	battleship = { 8000, 8250, 8250 };
 	tooclose = false;
 
 	InitShipHUD();
@@ -295,6 +295,8 @@ void SHIPDTP::Update(double dt)
 
 	
 	camera.Update(dt, playership.boostable(), false);
+
+	playership.setPos(camera.position);
 }
 
 void SHIPDTP::Render()
@@ -332,12 +334,8 @@ void SHIPDTP::Render()
 	Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
-	modelStack.Rotate(90, 0, 1, 0);
 	RenderSkybox();
-	modelStack.PopMatrix();
-
+	
 
 	//RenderMesh(meshList[GEO_AXES], false);
 
@@ -372,24 +370,24 @@ void SHIPDTP::Render()
 	// RENDER PLANET
 	modelStack.PopMatrix();
 	modelStack.PushMatrix();
-	modelStack.Translate(-2750, -1250, -1250);
+	modelStack.Translate(-7000, -7000, -7000);
 	modelStack.Rotate(180, 0, 1, 0);
-	modelStack.Scale(100, 100, 100);
+	modelStack.Scale(300, 300, 300);
 	RenderMesh(meshList[GEO_PLANET], false);
 	modelStack.PopMatrix();
 
 
-	battleship = { 2760 + fleetspeed * 2.0f, 1250 + fleetspeed*0.8f, 1250 + fleetspeed*0.9f };
+	battleship = { 8000 + fleetspeed * 2.0f, 8250 + fleetspeed*1.5f, 8250 + fleetspeed*2.0f };
 	if (!collided)
 	{
 		// RENDER SPACE SPACESTATION AT THE OTHER END
 		// EnemyShip FROMTHE OTHER END
 		// BattleShip
 		modelStack.PushMatrix();
-		modelStack.Translate(2760 + fleetspeed * 2, 1250 + fleetspeed*0.8, 1250 + fleetspeed*0.9);
-		modelStack.Rotate(-115, 0, 1, 0);
-		modelStack.Rotate(25, 1, 0, 0);
-		modelStack.Scale(200, 200, 200);
+		modelStack.Translate(8000 + fleetspeed * 2.0f, 8250 + fleetspeed*1.5f, 8250 + fleetspeed*2.0f);
+		modelStack.Rotate(-140, 0, 1, 0);
+		modelStack.Rotate(40, 1, 0, 0);
+		modelStack.Scale(500, 500, 500);
 		{
 			modelStack.PushMatrix();
 			RenderMesh(meshList[BATTLESHIP_BODY], false);
@@ -413,21 +411,17 @@ void SHIPDTP::Render()
 	//// TEXT FOR GAME
 	////
 	/////////////////////////////////////////////////////////////////////////////////
-	//RenderTextOnScreen(meshList[GEO_TEXT], "FPS", Color(0, 1, 0), 3, 0, 19);
-	//std::string FPS = std::to_string(framerate);
-	//RenderTextOnScreen(meshList[GEO_TEXT2], FPS, Color(0, 1, 0), 3, 5, 19);
+	RenderTextOnScreen(meshList[GEO_TEXT], "Planet Health: ", Color(0, 1, 0), 3, 0, 0);
+	std::string health = std::to_string(planethp);
+	RenderTextOnScreen(meshList[GEO_TEXT2], health, Color(0, 1, 0), 3, 14, 0);
 
-	//RenderTextOnScreen(meshList[GEO_TEXT], "Planet Health: ", Color(0, 1, 0), 3, 0, 18);
-	//std::string health = std::to_string(planethp);
-	//RenderTextOnScreen(meshList[GEO_TEXT2], health, Color(0, 1, 0), 3, 14, 18);
 
-	//RenderTextOnScreen(meshList[GEO_TEXT], "Player health: ", Color(0, 1, 0), 3, 0, 15);
-	//std::string playerhp = std::to_string(player.gethealth());
-	//RenderTextOnScreen(meshList[GEO_TEXT2], playerhp, Color(0, 1, 0), 3, 18, 15);
-
-	//RenderTextOnScreen(meshList[GEO_TEXT], "Fleet health: ", Color(0, 1, 0), 3, 0, 14);
-	//std::string fthp = std::to_string(fleethp);
-	//RenderTextOnScreen(meshList[GEO_TEXT2], fthp, Color(0, 1, 0), 3, 18, 14);
+	if (!w5)
+	{
+		RenderTextOnScreen(meshList[GEO_TEXT], "Fleet health: ", Color(0, 1, 0), 3, 0, 1);
+		std::string fthp = std::to_string(fleethp);
+		RenderTextOnScreen(meshList[GEO_TEXT2], fthp, Color(0, 1, 0), 3, 14, 1);
+	}
 
 
 	//if (gameover)
@@ -435,11 +429,6 @@ void SHIPDTP::Render()
 	//	RenderTextOnScreen(meshList[GEO_TEXT], "YOU DED", Color(0, 1, 0), 3, 10, 10);
 	//}
 
-	//if (tooclose)
-	//{
-	//	RenderTextOnScreen(meshList[GEO_TEXT], "YOU ARE TOO NEAR", Color(0, 1, 0), 3, 0, 10);
-	//}
-	//std::cout << battleship << std::endl;
 }
 
 void SHIPDTP::RenderSkybox()
@@ -640,6 +629,7 @@ void SHIPDTP::Exit()
 
 void SHIPDTP::collision()
 {
+	//==================== Playership hits Planet ==================================
 	{
 		Vector3 distance = camera.position - planet;
 		if (distance.Length() < 1000)
@@ -651,10 +641,12 @@ void SHIPDTP::collision()
 		}
 	}
 
+
+	//==================== Playership too near to battleship ==================================
 	{
 		Vector3 distance = battleship - camera.position;
-
-		if (distance.Length() < 3000)
+		// dis ++ its w5
+		if (distance.Length() < 5000)
 		{
 			tooclose = true;
 		}
@@ -662,7 +654,3 @@ void SHIPDTP::collision()
 			tooclose = false;
 	}
 }
-
-
-
-//(!) add in mission AO for spaceship

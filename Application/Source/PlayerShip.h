@@ -11,6 +11,7 @@ private:
 	float fuel;			// Fuel
 	bool dead;
 	bool fuel_depleted; 
+	bool energy_depleted;
 	float speed;		
 	
 	Vector3 maxAOZone;
@@ -34,6 +35,10 @@ public:
 	bool isZoneOut(float zt);
 	bool isDead();
 
+	bool shootable();
+	void weapon_idling();
+	void energy_depletion();
+	void Shooting();
 	//Getter
 	Vector3 getPos();
 	int getHealth();

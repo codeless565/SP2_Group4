@@ -60,6 +60,12 @@ void SHIPDTP::InitShipHUD()
 		health.push_back(Vector3(x, y, z));
 	}
 
+	fuelG = 1;
+	fuelR = 1;
+
+	energyG = 1;
+	energyR = 1;
+
 	dt_time = 30;
 	counting = false;
 	zoneOutTime = playership.zoneOutTime() * 60;
@@ -100,9 +106,8 @@ void SHIPDTP::UpdateShipHUD(double dt)
 	int fuel_count = playership.getFuel();
 	fuel = std::to_string(fuel_count);
 	//================== Energy Count ===============================
-	
 	int energy_count = playership.getEnergy();
-	fuel = std::to_string(fuel_count);
+	energy = std::to_string(energy_count);
 	//===============================================================
 	bouncechecktimer++;
 }
@@ -125,8 +130,16 @@ void SHIPDTP::RenderShipHUD()
 	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(fuelR - (playership.getFuel() / 100), fuelG * playership.getFuel() / 100, 0), 2.5f, 2.05f, 3.55f);
 	//====================================== Energy =======================================================
 	RenderQuadOnScreen(meshList[HUD_ENERGYFRAME], 70, 100, 76.8f, 30);
-	RenderTextOnScreen(meshList[GEO_TEXT2], "0", Color(1, 0, 0), 2, 36.8f, 4.5f);
-	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(1, 0, 0), 2.5f, 31.45f, 3.55f);
+	if (playership.shootable())
+	{
+		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.getEnergy(), 76.8f, 12.5f + 17.5f * playership.getEnergy() / 100);
+	}
+	else if (!playership.shootable() && bouncechecktimer % 12 != 0)
+	{
+		RenderQuadOnScreen(meshList[HUD_BAR], 70, playership.getEnergy(), 76.8f, 12.5f + 17.5f * playership.getEnergy() / 100);
+	}
+	RenderTextOnScreen(meshList[GEO_TEXT2], energy, Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2, 36.8f, 4.5f);
+	RenderTextOnScreen(meshList[GEO_TEXT2], "%", Color(fuelR - (playership.getEnergy() / 100), fuelG * playership.getEnergy() / 100, 0), 2.5f, 31.45f, 3.55f);
 	//======================================== HP =========================================================
 	for (float i = 0; i < playership.getHealth() / 10; i++)
 		RenderQuadOnScreen(meshList[HUD_HP], 60, 60, health[i].x, health[i].y);

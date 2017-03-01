@@ -68,6 +68,7 @@ void ShipRace::InitShipHUD()
 	fuelG = 1;
 	fuelR = 1;
 
+
 	bounceT = 0;
 	dt_time = 30;
 	safezone_X = 70000;

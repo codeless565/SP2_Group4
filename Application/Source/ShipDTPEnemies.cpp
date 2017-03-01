@@ -16,19 +16,19 @@ void SHIPDTP::InitEnemyField()
 
 void SHIPDTP::RenderEnemyField()
 {
-	for (int i = 0; i < enemyships.size(); i++) //  enemyships.size()
+	for (int i = 0; i < enemyships.size(); i++)
 	{
 		int x, y, z;
 
 		x = enemyships[i].x + enemyspeed * 2;
-		y = enemyships[i].y + enemyspeed*0.8;
-		z = enemyships[i].z + enemyspeed*0.9;
+		y = enemyships[i].y + enemyspeed*1.7;
+		z = enemyships[i].z + enemyspeed*2;
 
 		modelStack.PushMatrix();
 		modelStack.Translate(x, y, z);
-		modelStack.Rotate(-115, 0, 1, 0);
-		modelStack.Rotate(20, 1, 0, 0);
-		modelStack.Scale(20, 20, 20);
+		modelStack.Rotate(-140, 0, 1, 0);
+		modelStack.Rotate(40, 1, 0, 0);
+		modelStack.Scale(100, 100, 100);
 		RenderMesh(meshList[ENEMYSHIP], false);
 		modelStack.PopMatrix();
 
@@ -37,9 +37,9 @@ void SHIPDTP::RenderEnemyField()
 		enemyships[i].z = z;
 	}
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "Enemies remaining: ", Color(0, 1, 0), 3, 0, 16);
+	RenderTextOnScreen(meshList[GEO_TEXT], "Enemies remaining: ", Color(0, 1, 0), 3, 0, 18);
 	std::string enemyamt = std::to_string(amt);
-	RenderTextOnScreen(meshList[GEO_TEXT2], enemyamt, Color(0, 1, 0), 3, 18, 16);
+	RenderTextOnScreen(meshList[GEO_TEXT2], enemyamt, Color(0, 1, 0), 3, 18, 18);
 }
 
 void SHIPDTP::RNGEnemyPos()
@@ -50,11 +50,11 @@ void SHIPDTP::RNGEnemyPos()
 
 	for (int i = 0; i < amt; i++)
 	{
-		x = rand() % (5 + 1) * 100 + 2200;
+		x = rand() % (5 + 1) * 100 + 7000;
 
-		y = rand() % (5 + 1) * 100 + 500;
+		y = rand() % (5 + 1) * 100 + 6000;
 
-		z = rand() % (5 + 1) * 150 + 850; // space inbetween
+		z = rand() % (5 + 1) * 300 + 7000; // space inbetween
 		std::cout << x << ' ' << y << ' ' << z << std::endl;
 		enemyships.push_back(Vector3(x, y, z));
 	}

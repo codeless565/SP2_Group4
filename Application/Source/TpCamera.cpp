@@ -30,7 +30,7 @@ void TpCamera::Init(const Vector3& pos, const Vector3& target, const Vector3& up
 
 void TpCamera::Update(double dt)
 {
-	static const float CAMERA_SPEED = 50.f;
+	static const float CAMERA_SPEED = 500.f;
 
 	Vector3 view = (target - position).Normalized();
 	Vector3 right = view.Cross(up);

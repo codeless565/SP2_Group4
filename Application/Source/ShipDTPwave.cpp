@@ -74,41 +74,41 @@ void SHIPDTP::UpdateWave()
 
 void SHIPDTP::RenderWave()
 {
-	RenderTextOnScreen(meshList[GEO_TEXT], "Wave: ", Color(0, 1, 0), 3, 0, 17);
+	RenderTextOnScreen(meshList[GEO_TEXT], "Wave: ", Color(0, 1, 0), 3, 0, 19);
 
 	if (!w1)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "1", Color(0, 1, 0), 3, 5, 17);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "1", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && !w2)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "2", Color(0, 1, 0), 3, 5, 17);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "2", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && w2 && !w3)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "3", Color(0, 1, 0), 3, 5, 17);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "3", Color(0, 1, 0), 3, 5, 19);
 	}
 	else if (w1 && w2 && w3 && !w4)
 	{
-		RenderTextOnScreen(meshList[GEO_TEXT2], "4", Color(0, 1, 0), 3, 5, 17);
+		RenderTextOnScreen(meshList[GEO_TEXT2], "4", Color(0, 1, 0), 3, 5, 19);
 	}
 	else
 	{
 		if (w1 && w2 && w3 && w4 && !w5)
 		{
-			RenderTextOnScreen(meshList[GEO_TEXT2], "5", Color(0, 1, 0), 3, 5, 17);
+			RenderTextOnScreen(meshList[GEO_TEXT2], "5", Color(0, 1, 0), 3, 5, 19);
 		}
 	}
 }
 
 void SHIPDTP::CollideWave()
 {
-	// enemy ships hit planet
+	//==================== Enemy ships hit Planet ==================================
 	for (int i = 0; i < enemyships.size(); i++) 
 	{
 		Vector3 distance = enemyships[i] - planet;
 
-		if (distance.Length() < 1000)
+		if (distance.Length() < 1500)
 		{
 			enemyships.erase(enemyships.begin() + i);
 			planethp--;
@@ -116,7 +116,10 @@ void SHIPDTP::CollideWave()
 		}
 	}
 
-	{// battleship hit planet
+
+	//==================== Battleship hit Planet ==================================
+
+	{
 		Vector3 distance2 = battleship - planet;
 
 		if (distance2.Length() < 2700)
@@ -125,7 +128,9 @@ void SHIPDTP::CollideWave()
 		}
 	}
 
-	{// player hit enemyship
+
+	//==================== Player hit Enemys ships ==================================
+	{
 		for (int i = 0; i < enemyships.size(); i++)
 		{
 			Vector3 distance = enemyships[i] - camera.position;
