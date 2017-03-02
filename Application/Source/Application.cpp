@@ -1,23 +1,28 @@
 
 #include "Application.h"
 
-//Include GLEW
-#include <GL/glew.h>
-
-//Include GLFW
-#include <GLFW/glfw3.h>
 
 //Include the standard C++ headers
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "Indoor1.h"
+#include "Indoor2.h"
+#include "Indoor3.h"
+#include "Indoor4.h"
 #include "ShipRace.h"
 #include "ShipDTP.h"
+#include "Menu.h"
+#include "Loading.h"
 #include "GameOver.h"
 
-GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
 const unsigned int frameTime = 1000 / FPS; // time for each frame
+
+static int SceneID;
+//static int SceneCurr;
+
+GLFWwindow* Application::m_window = 0;
 
 //Define an error callback
 static void error_callback(int error, const char* description)
@@ -100,15 +105,95 @@ void Application::Init()
 	}
 }
 
+void Application::SetScene(int sceneNo)
+{
+	SceneID = sceneNo;
+}
+
+//void Application::RecordScene(int sceneNo)
+//{
+//	SceneCurr = sceneNo;
+//}
+
+//int Application::Retry()
+//{
+//	return SceneCurr;
+//}
+
 void Application::Run()
 {
 	//Main Loop
-	Scene *scene = new GameOver();
+	//SceneID = 1;
+	Scene *scene1 = new Menu();
+	Scene *scene2 = new Loading();
+	Scene *scene3 = new Indoor1();
+	Scene *scene4 = new Indoor2();
+	Scene *scene5 = new Indoor3();
+	Scene *scene6 = new Indoor4();
+	Scene *scene7 = new ShipRace();
+	Scene *scene8 = new SHIPDTP();
+	Scene *scene9 = new GameOver();
+	Scene *scene = scene8;
+	SceneID = 8;
+
 	scene->Init();
 
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
+		if (SceneID == 1 && scene != scene1)
+		{
+			scene->Exit();
+			scene = scene1;
+			scene->Init();
+		}
+		else if (SceneID == 2 && scene != scene2)
+		{
+			scene->Exit();
+			scene = scene2;
+			scene->Init();
+		}
+		else if (SceneID == 3 && scene != scene3)
+		{
+			scene->Exit();
+			scene = scene3;
+			scene->Init();
+		}
+		else if (SceneID == 4 && scene != scene4)
+		{
+			scene->Exit();
+			scene = scene4;
+			scene->Init();
+		}
+		else if (SceneID == 5 && scene != scene5)
+		{
+			scene = scene4;
+		}
+		else if (SceneID == 6 && scene != scene6)
+		{
+			scene->Exit();
+			scene = scene6;
+			scene->Init();
+		}
+		else if (SceneID == 7 && scene != scene7)
+		{
+			scene->Exit();
+			scene = scene7;
+			scene->Init();
+		}
+		else if (SceneID == 8 && scene != scene8)
+		{
+			scene->Exit();
+			scene = scene8;
+			scene->Init();
+		}
+		else if (SceneID == 9 && scene != scene9)
+		{
+			scene->Exit();
+			scene = scene9;
+			scene->Init();
+		}
+
 		scene->Update(m_timer.getElapsedTime());
 		scene->Render();
 		//Swap buffers
@@ -118,8 +203,12 @@ void Application::Run()
         m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.   
 
 	} //Check if the ESC key had been pressed or if the window had been closed
-	scene->Exit();
-	delete scene;
+	
+	//exit all scene then delete
+	scene1->Exit();
+	scene2->Exit();
+	delete scene1;
+	delete scene2;
 }
 
 void Application::Exit()

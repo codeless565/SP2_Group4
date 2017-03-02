@@ -92,8 +92,8 @@ void PlayerShip::damaged(int dmg)
 }
 bool PlayerShip::isZoneOut(float zt)
 {
-	//if (zt <= 0)
-	//	dead = true;
+	if (zt <= 0)
+		dead = true;
 
 	if (position.x < minAOZone.x || position.y < minAOZone.y || position.z < minAOZone.z || position.x > maxAOZone.x || position.y > maxAOZone.y || position.z > maxAOZone.z)
 		return true;
@@ -107,8 +107,6 @@ bool PlayerShip::isDead()
 
 	return dead;
 }
-
-
 bool PlayerShip::shootable()
 {
 	energy_depletion();
@@ -149,9 +147,6 @@ void PlayerShip::Shooting()
 		energy = 0;
 	}
 }
-
-
-
 
 //Getters
 Vector3 PlayerShip::getPos()

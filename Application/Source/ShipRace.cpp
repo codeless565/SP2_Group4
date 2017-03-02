@@ -16,6 +16,11 @@ ShipRace::ShipRace()
 
 ShipRace::~ShipRace()
 {
+	enemyship.clear();
+	asteroids_Curr.clear();
+	asteroids_Pos.clear();
+	asteroids_Rotation.clear();
+	asteroids_Speed.clear();
 }
 
 void ShipRace::Init()
@@ -41,13 +46,15 @@ void ShipRace::Init()
 	glBindVertexArray(m_vertexArrayID);
 
 	//Load vertex and fragment shaders
-	//m_programID = LoadShaders("Shader//Shading.vertexshader", "Shader//LightSource.fragmentshader");	// Use our shader
-	//m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Texture.fragmentshader");
-	//m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Blending.fragmentshader");
 	m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
+	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 
+	// Get a handle for our "colorTexture" uniform
+	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
+	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
+	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
+	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
 
-	glUseProgram(m_programID);
 	// Get a handle for our "MVP" uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
 	m_parameters[U_MODELVIEW] = glGetUniformLocation(m_programID, "MV");
@@ -56,25 +63,22 @@ void ShipRace::Init()
 	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
 	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+
 	m_parameters[U_LIGHT0_POSITION] = glGetUniformLocation(m_programID, "lights[0].position_cameraspace");
 	m_parameters[U_LIGHT0_COLOR] = glGetUniformLocation(m_programID, "lights[0].color");
 	m_parameters[U_LIGHT0_POWER] = glGetUniformLocation(m_programID, "lights[0].power");
 	m_parameters[U_LIGHT0_KC] = glGetUniformLocation(m_programID, "lights[0].kC");
 	m_parameters[U_LIGHT0_KL] = glGetUniformLocation(m_programID, "lights[0].kL");
 	m_parameters[U_LIGHT0_KQ] = glGetUniformLocation(m_programID, "lights[0].kQ");
-	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
-	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
 	m_parameters[U_LIGHT0_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[0].spotDirection");
 	m_parameters[U_LIGHT0_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[0].cosCutoff");
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
-	// Get a handle for our "colorTexture" uniform
-	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
-	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture");
-	m_parameters[U_TEXT_ENABLED] = glGetUniformLocation(m_programID, "textEnabled");
-	m_parameters[U_TEXT_COLOR] = glGetUniformLocation(m_programID, "textColor");
+	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
+
+	glUseProgram(m_programID);
 
 	camera.Init(Vector3(-9000, 100, -1700), Vector3(10, 100, -1700), Vector3(0, 10, 0));
 
@@ -85,7 +89,7 @@ void ShipRace::Init()
 
 	meshList[SPACE_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1));
 	meshList[SPACE_BACK]->textureID = LoadTGA("Image//SpaceBack.tga");
-	
+
 	meshList[SPACE_LEFT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1));
 	meshList[SPACE_LEFT]->textureID = LoadTGA("Image//SpaceLeft.tga");
 
@@ -100,18 +104,24 @@ void ShipRace::Init()
 
 	meshList[PLAYERSHIP_BODY] = MeshBuilder::GenerateOBJ("PlayerShip_Body", "OBJ//PlayerShipBody.obj");
 	meshList[PLAYERSHIP_BODY]->textureID = LoadTGA("Image//PlayerShipBody.tga");
+	meshList[PLAYERSHIP_BODY]->material.kAmbient.Set(0.6f, 0.6f, 0.6f);
+	meshList[PLAYERSHIP_BODY]->material.kDiffuse.Set(0.8f, 0.8f, 0.8f);
+	meshList[PLAYERSHIP_BODY]->material.kSpecular.Set(0.4f, 0.4f, 0.4f);
+	meshList[PLAYERSHIP_BODY]->material.kShininess = 1.f;
 
 	meshList[PLAYERSHIP_ENGINE] = MeshBuilder::GenerateOBJ("PlayerShip_Engine", "OBJ//PlayerShipEngine.obj");
 	meshList[PLAYERSHIP_ENGINE]->textureID = LoadTGA("Image//PlayerShipEngine.tga");
-
-	meshList[BATTLESHIP_BODY] = MeshBuilder::GenerateOBJ("BattleShip_Body", "OBJ//BattleShipBody.obj");
-	meshList[BATTLESHIP_BODY]->textureID = LoadTGA("Image//BattleShipBody.tga");
-
-	meshList[BATTLESHIP_ENGINE] = MeshBuilder::GenerateOBJ("BattleShip_Engine", "OBJ//BattleShipEngine.obj");
-	meshList[BATTLESHIP_ENGINE]->textureID = LoadTGA("Image//BattleShipEngine.tga");
+	meshList[PLAYERSHIP_ENGINE]->material.kAmbient.Set(0.6f, 0.6f, 0.6f);
+	meshList[PLAYERSHIP_ENGINE]->material.kDiffuse.Set(0.8f, 0.8f, 0.8f);
+	meshList[PLAYERSHIP_ENGINE]->material.kSpecular.Set(0.4f, 0.4f, 0.4f);
+	meshList[PLAYERSHIP_ENGINE]->material.kShininess = 1.f;
 
 	meshList[ENEMYSHIP] = MeshBuilder::GenerateOBJ("EnemyShip", "OBJ//EnemyShip.obj");
 	meshList[ENEMYSHIP]->textureID = LoadTGA("Image//EnemyShip.tga");
+	meshList[ENEMYSHIP]->material.kAmbient.Set(0.6f, 0.6f, 0.6f);
+	meshList[ENEMYSHIP]->material.kDiffuse.Set(0.8f, 0.8f, 0.8f);
+	meshList[ENEMYSHIP]->material.kSpecular.Set(0.4f, 0.4f, 0.4f);
+	meshList[ENEMYSHIP]->material.kShininess = 1.f;
 
 	// GENERAL USE
 	meshList[BNM_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
@@ -120,13 +130,8 @@ void ShipRace::Init()
 	meshList[MISSION_TEXT] = MeshBuilder::GenerateText("Mission", 16, 16);
 	meshList[MISSION_TEXT]->textureID = LoadTGA("Image//Mishmash_BRK.tga");
 
-	InitShipHUD();
-	InitSpaceStation();
-	InitAsteroidField();
-	
-	light[0].type = Light::LIGHT_SPOT;
-	//light[0].position.Set(225, 3, 225); // first building light
-	light[0].position.Set(0, 0, 0);
+	light[0].type = Light::LIGHT_DIRECTIONAL;
+	light[0].position.Set(1000, 5000, -1700);
 	light[0].color.Set(1, 1, 1);
 	light[0].power = 1;
 	light[0].kC = 1.f;
@@ -161,11 +166,13 @@ void ShipRace::Init()
 	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 50000.f);
 	projectionStack.LoadMatrix(projection);
 
-
-
 	playership.InitPlayerShip(camera.position, 100, 100, 100, 20);
 	//playership.InitAOZone({ -8000, -8000, -2500 }, { 9000, 8000, -500 });
 	playership.InitAOZone({ -10000, -1000, -2500 }, { 110000, 1200, -500 });
+
+	InitShipHUD();
+	InitSpaceStation();
+	InitAsteroidField();
 
 	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y + 105, playership.position.z + 298 }, 300, 100, 40, 100, 15));
 	enemyship.push_back(Enemy({ playership.position.x - 2000, playership.position.y - 193, playership.position.z + 306 }, 300, 100, 40, 100, 15));
@@ -185,66 +192,58 @@ void ShipRace::Update(double dt)
 {
 	framerate = 1 / dt;
 
-	if (mission_Breifed)
+	if (Application::IsKeyPressed('P') && !paused)
+		paused = true;
+
+	if (!paused)
 	{
-		float LSPEED = 10.f;
-		if (Application::IsKeyPressed('1')) //enable back face culling
-			glEnable(GL_CULL_FACE);
-		if (Application::IsKeyPressed('2')) //disable back face culling
-			glDisable(GL_CULL_FACE);
-		if (Application::IsKeyPressed('3'))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
-		if (Application::IsKeyPressed('4'))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
-
-
-		if (Application::IsKeyPressed('I'))
-			light[0].position.z -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('K'))
-			light[0].position.z += (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('J'))
-			light[0].position.x -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('L'))
-			light[0].position.x += (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('O'))
-			light[0].position.y -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('P'))
-			light[0].position.y += (float)(LSPEED * dt);
-
-		if (Application::IsKeyPressed('5'))
+		if (mission_Breifed)
 		{
-			light[0].type = Light::LIGHT_POINT;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
-		else if (Application::IsKeyPressed('6'))
-		{
-			light[0].type = Light::LIGHT_DIRECTIONAL;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
-		else if (Application::IsKeyPressed('7'))
-		{
-			light[0].type = Light::LIGHT_SPOT;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
+			float LSPEED = 10.f;
+			if (Application::IsKeyPressed('1')) //enable back face culling
+				glEnable(GL_CULL_FACE);
+			if (Application::IsKeyPressed('2')) //disable back face culling
+				glDisable(GL_CULL_FACE);
+			if (Application::IsKeyPressed('3'))
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
+			if (Application::IsKeyPressed('4'))
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-		if (!captured)
-		{//SpaceStation
-			UpdateSpaceStation(dt);
-			UpdateAsteroidField(dt);
+			light[0].position.x = camera.position.x * 0.9f + 10000;
+			light[0].position.z = camera.position.z * 0.9f;
 
-			for (int i = 0; i < enemyship.size(); i++)
+			if (Application::IsKeyPressed('5'))
 			{
-				if (enemyship[i].position.x < playership.position.x + 3500)
-					enemyship[i].chasing(dt);
+				light[0].type = Light::LIGHT_POINT;
+				glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+			}
+			else if (Application::IsKeyPressed('6'))
+			{
+				light[0].type = Light::LIGHT_DIRECTIONAL;
+				glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+			}
+			else if (Application::IsKeyPressed('7'))
+			{
+				light[0].type = Light::LIGHT_SPOT;
+				glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 			}
 
-			CheckAsteroidCollision();
-			CheckEnemyCollision();
 
-			UpdateShipHUD(dt);
-
-			if (!playership.isDead() && !hyperDrive)
+			if (!playership.isDead() && !hyperDrive && !captured)
 			{
+				//SpaceStation
+				UpdateSpaceStation(dt);
+				UpdateAsteroidField(dt);
+
+				for (int i = 0; i < enemyship.size(); i++)
+				{
+					if (enemyship[i].position.x < playership.position.x + 3500)
+						enemyship[i].chasing(dt);
+				}
+
+				CheckAsteroidCollision();
+				CheckEnemyCollision();
+
 				camera.Update(dt, playership.boostable(), hyperDrive);
 				//player
 				if (Application::IsKeyPressed(VK_LEFT) && !Application::IsKeyPressed(VK_RIGHT))
@@ -292,19 +291,32 @@ void ShipRace::Update(double dt)
 				position_y = camera.position.y;
 				position_z = camera.position.z;
 			}
+			if (playership.isDead() || captured )
+				Application::SetScene(8);
 
 			if (!hyperDrive)
+			{
+				UpdateShipHUD(dt);
 				playership.setPos(camera.position);
+			}
 			else
 			{
 				position_x += (float)(500 * dt);
 				GameClearTimer++;
 			}
 
+			if (GameClearTimer >= 400)
+			{
+				Application::SetScene(7);
+			}
+		}
+		else
+		{
+			UpdateMissionBrief();
 		}
 	}
 	else
-		UpdateMissionBrief();
+		UpdatePause();
 }
 
 void ShipRace::Render()
@@ -344,83 +356,82 @@ void ShipRace::Render()
 
 	//=================================== Rendering OBJ ====================================================
 
-	if (mission_Breifed)
+	if (!paused)
 	{
-		RenderMesh(meshList[GEO_AXES], false);
-
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
-		modelStack.Rotate(90, 0, 1, 0);
-		RenderSkybox();
-		modelStack.PopMatrix();
-
-		// PlayerShip
-		modelStack.PushMatrix();
-		modelStack.Translate(position_x, position_y, position_z);
-		modelStack.Rotate(PShipRotateHori, 0, 1, 0);
-		modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
+		if (mission_Breifed)
 		{
+			RenderMesh(meshList[GEO_AXES], false);
+
 			modelStack.PushMatrix();
-			modelStack.Translate(0, -7, 13);
-			modelStack.Scale(5, 5, 5);
+			modelStack.Translate(camera.position.x * 0.9f, camera.position.y * 0.9f, camera.position.z * 0.9f);
+			modelStack.Rotate(90, 0, 1, 0);
+
+			RenderSkybox();
+			modelStack.PopMatrix();
+
+			// PlayerShip
+			modelStack.PushMatrix();
+			modelStack.Translate(position_x, position_y, position_z);
+			modelStack.Rotate(PShipRotateHori, 0, 1, 0);
+			modelStack.Rotate(PShipRotateVerti, 1, 0, 0);
 			{
 				modelStack.PushMatrix();
-				RenderMesh(meshList[PLAYERSHIP_BODY], false);
-				modelStack.PopMatrix();
+				modelStack.Translate(0, -7, 13);
+				modelStack.Scale(5, 5, 5);
+				{
+					modelStack.PushMatrix();
+					RenderMesh(meshList[PLAYERSHIP_BODY], true);
+					modelStack.PopMatrix();
 
-				modelStack.PushMatrix();
-				RenderMesh(meshList[PLAYERSHIP_ENGINE], false);
+					modelStack.PushMatrix();
+					RenderMesh(meshList[PLAYERSHIP_ENGINE], true);
+					modelStack.PopMatrix();
+				}
 				modelStack.PopMatrix();
 			}
 			modelStack.PopMatrix();
-		}
-		modelStack.PopMatrix();
 
-		// Space Station
-		RenderSpaceStation();
+			// Space Station
+			RenderSpaceStation();
 
-		// EnemyShip
-		for (int i = 0; i < enemyship.size(); i++)
-		{
-			Vector3 distance = playership.position - enemyship[i].position;
-
-			if (distance.Length() <= 8000 && !enemyship[i].isDead())
+			// EnemyShip
+			for (int i = 0; i < enemyship.size(); i++)
 			{
-				modelStack.PushMatrix();
-				modelStack.Translate(enemyship[i].position.x, enemyship[i].position.y, enemyship[i].position.z);
-				modelStack.Rotate(90, 0, 1, 0);
-				modelStack.Scale(20, 20, 20);
-				RenderMesh(meshList[ENEMYSHIP], false);
-				modelStack.PopMatrix();
+				Vector3 distance = playership.position - enemyship[i].position;
+
+				if (distance.Length() <= 8000 && !enemyship[i].isDead())
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(enemyship[i].position.x, enemyship[i].position.y, enemyship[i].position.z);
+					modelStack.Rotate(90, 0, 1, 0);
+					modelStack.Scale(20, 20, 20);
+					RenderMesh(meshList[ENEMYSHIP], true);
+					modelStack.PopMatrix();
+				}
+			}
+
+			RenderAsteroidField();
+
+			RenderTextOnScreen(meshList[BNM_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
+			std::string s = std::to_string(framerate);
+			RenderTextOnScreen(meshList[BNM_TEXT], s, Color(0, 1, 0), 2, 3.5f, 0);
+			//HDrive
+			if (!hyperDrive)
+				RenderShipHUD();
+			else
+				RenderQuadOnScreen(meshList[HUD_HDRIVE], hyperdriveScale, hyperdriveScale, 40, 30);
+			//MISSION CLEAR
+			if (hyperDrive && GameClearTimer >= 200)
+			{
+				RenderQuadOnScreen(meshList[HUD_BLACK], 80, 60, 40, 30);
+				RenderTextOnScreen(meshList[BNM_TEXT], "MISSION CLEAR", Color(0.9f, 0.9f, 0.9f), 6.f, 2.9f, 5.5f);
 			}
 		}
-
-		RenderAsteroidField();
-
-		RenderTextOnScreen(meshList[BNM_TEXT], "FPS", Color(0, 1, 0), 2, 0, 0);
-		std::string s = std::to_string(framerate);
-		RenderTextOnScreen(meshList[BNM_TEXT], s, Color(0, 1, 0), 2, 3.5f, 0);
-
-		//dead
-		if (playership.isDead() || captured)
-		{
-			RenderQuadOnScreen(meshList[HUD_GAMEOVER], 100, 100, 40, 30);
-			RenderTextOnScreen(meshList[BNM_TEXT], "GAME OVER", Color(1, 0, 0), 6, 4.f, 4.5f);
-		}
-		//HDrive
-		if (!hyperDrive)
-			RenderShipHUD();
 		else
-			RenderQuadOnScreen(meshList[HUD_HDRIVE], hyperdriveScale, hyperdriveScale, 40, 30);
-		//MISSION CLEAR
-		if (hyperDrive && GameClearTimer >= 200)
-		{
-			RenderQuadOnScreen(meshList[HUD_BLACK], 80, 60, 40, 30);
-			RenderTextOnScreen(meshList[BNM_TEXT], "MISSION CLEAR", Color(0.9f, 0.9f, 0.9f), 6.f, 2.9f, 5.5f);
-		}
+			RenderMissionBrief();
 	}
 	else
-		RenderMissionBrief();
+		RenderPause();
 }
 
 void ShipRace::RenderSkybox()
@@ -621,6 +632,51 @@ void ShipRace::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 	{
 		Mtx44 characterSpacing;
 		characterSpacing.SetToTranslation(i * 0.6f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
+		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+
+		mesh->Render((unsigned)text[i] * 6, 6);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
+
+	projectionStack.PopMatrix();
+	viewStack.PopMatrix();
+	modelStack.PopMatrix();
+
+	glEnable(GL_DEPTH_TEST);
+}
+
+void ShipRace::RenderMenuOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+{
+	if (!mesh || mesh->textureID <= 0) //Proper error check
+		return;
+
+	glDisable(GL_DEPTH_TEST);
+	//Add these code just after glDisable(GL_DEPTH_TEST);
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity(); //No need camera for ortho mode
+
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity(); //Reset modelStack
+	modelStack.Scale(size, size, size);
+	modelStack.Translate(x, y, 0);
+
+	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
+	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
+	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+	for (unsigned i = 0; i < text.length(); ++i)
+	{
+		Mtx44 characterSpacing;
+		characterSpacing.SetToTranslation(i * 1.f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 

@@ -48,6 +48,9 @@ void ShipRace::InitShipHUD()
 
 	meshList[HUD_BOOTUP] = MeshBuilder::GenerateQuad("Bootup", Color(0.f, 1.f, 0.f));
 
+	meshList[MENU_TEXT] = MeshBuilder::GenerateText("Menu", 16, 16);
+	meshList[MENU_TEXT]->textureID = LoadTGA("Image//Macropsia_BRK.tga");
+
 	//init health
 	for (int i = 0; i < 10; i++)
 	{
@@ -75,13 +78,13 @@ void ShipRace::InitShipHUD()
 	hyperDrive = false;
 	hyperdriveScale = 0.1;
 	counting = false;
-	zoneOutTime = playership.zoneOutTime() * 60;
+	zoneOutTime = 600;
 	Compass = 0;
 	Target = { 70000, 0, 30 };
 
 	overtaken = false;
 	captured = false;
-	captTime = 0;
+	captTime = 300;
 
 	//Mission Briefing
 	mission_Breifed = false;	//bool to check if player already seen this screen
@@ -89,8 +92,13 @@ void ShipRace::InitShipHUD()
 	text_colorBooting = 0.8f;
 	text_colorFlashing = 0.005f;
 	bootUpBar = 0.01f;
-}
 
+	//pause
+	paused = false;
+	mainMenu = false;
+	clickpos = 1;
+	clickbounce = 0;
+}
 void ShipRace::UpdateShipHUD(double dt)
 {
 	//==================== Compass ==================================
@@ -171,7 +179,7 @@ void ShipRace::UpdateShipHUD(double dt)
 	}
 	else
 		captTime = 300;
-		
+
 	if (captTime <= 0)
 		captTime = 0;
 
@@ -187,10 +195,9 @@ void ShipRace::UpdateShipHUD(double dt)
 	else
 		nearGoal = false;
 	//================================================================	
-	
+
 	bounceT++;
 }
-
 void ShipRace::RenderShipHUD()
 {
 	//CrossHair
@@ -307,83 +314,140 @@ void ShipRace::RenderMissionBrief()
 		//Hull Integrity
 		if (mission_brief_Time > 200)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Hull Integrity: ", Color(0.f, 1.f, 0.f), 2.f, 7.f, 10.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Operation Ready", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 10.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Hull Integrity: ", Color(0.f, 1.f, 0.f), 2.f, 11.f, 10.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Operation Ready", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 10.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Hull Integrity: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 7.f, 10.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 10.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Hull Integrity: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 11.f, 10.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 10.f);
 		}
-		//Fuel Injectors
+		//Virtual Display
 		if (mission_brief_Time > 250)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Fuel Injectors: ", Color(0.f, 1.f, 0.f), 2.f, 7.f, 9.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 9.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Virtual Display: ", Color(0.f, 1.f, 0.f), 2.f, 10.43f, 9.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 9.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Fuel Injectors: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 7.f, 9.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 9.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Virtual Display: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 10.43f, 9.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 9.f);
 		}
-		//Energy Capacitors
+
+		//Fuel Injectors
 		if (mission_brief_Time > 300)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "ENergy Capacitors: ", Color(0.f, 1.f, 0.f), 2.f, 5.2f, 8.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 8.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Fuel Injectors: ", Color(0.f, 1.f, 0.f), 2.f, 11.f, 8.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 8.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "ENergy Capacitors: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 5.2f, 8.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 8.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Fuel Injectors: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 11.f, 8.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 8.f);
 		}
-		//HD Systems
+		//Energy Capacitors
 		if (mission_brief_Time > 350)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Hyperdrive System: ", Color(0.f, 1.f, 0.f), 2.f, 5.2f, 7.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 7.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "ENergy Capacitors: ", Color(0.f, 1.f, 0.f), 2.f, 9.2f, 7.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 7.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Hyperdrive System: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 5.2f, 7.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 7.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "ENergy Capacitors: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 9.2f, 7.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 7.f);
 		}
-		//Auto-Def System
+		//HD Systems
 		if (mission_brief_Time > 400)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Auto-Defense System: ", Color(0.f, 1.f, 0.f), 2.f, 4.f, 6.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 6.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Hyperdrive System: ", Color(0.f, 1.f, 0.f), 2.f, 9.2f, 6.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 6.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Auto-Defense System: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 4.f, 6.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 6.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Hyperdrive System: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 9.2f, 6.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 6.f);
 		}
-		//Graviton Thrusters
+		//Auto-Def System
 		if (mission_brief_Time > 450)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Graviton Thrusters: ", Color(0.f, 1.f, 0.f), 2.f, 4.6f, 5.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 16.5f, 5.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Auto-Defense System: ", Color(0.f, 1.f, 0.f), 2.f, 8.f, 5.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 5.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Graviton Thrusters: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 4.6f, 5.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 5.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Auto-Defense System: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 8.f, 5.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 5.f);
 		}
-		//Photon Cannons
+		//Graviton Thrusters
 		if (mission_brief_Time > 500)
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Photon Cannons: ", Color(1.f, 0.f, 0.f), 2.f, 7.f, 4.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Critical Damage", Color(1.f, 0.f, 0.f), 2.f, 16.5f, 4.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Graviton Thrusters: ", Color(0.f, 1.f, 0.f), 2.f, 8.6f, 4.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Online", Color(0.f, 1.f, 0.f), 2.f, 20.5f, 4.f);
 		}
 		else
 		{
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Photon Cannons: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 7.f, 4.f);
-			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 16.5f, 4.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Graviton Thrusters: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 8.6f, 4.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 4.f);
+		}
+		//Photon Cannons
+		if (mission_brief_Time > 550)
+		{
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Photon Cannons: ", Color(1.f, 0.f, 0.f), 2.f, 11.f, 3.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Critical Damage", Color(1.f, 0.f, 0.f), 2.f, 20.5f, 3.f);
+		}
+		else
+		{
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Photon Cannons: ", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 11.f, 3.f);
+			RenderTextOnScreen(meshList[MISSION_TEXT], "Booting Up ...", Color(text_colorBooting, text_colorBooting, text_colorBooting), 2.f, 20.5f, 3.f);
 		}
 	}
 
 	if (mission_brief_Time > 600)
 		RenderTextOnScreen(meshList[MISSION_TEXT], ">> Enter", Color(text_colorBooting, text_colorBooting, text_colorBooting), 3.f, 20.f, 0.5f);
+
+}
+void ShipRace::UpdatePause()
+{
+	//======================== PAUSE =====================================
+	if (Application::IsKeyPressed(VK_UP) && clickbounce >= 5)
+	{
+		clickpos--;
+		clickbounce = 0;
+	}
+	if (Application::IsKeyPressed(VK_DOWN) && clickbounce >= 5)
+	{
+		clickpos++;
+		clickbounce = 0;
+	}
+	if (clickpos <= 1)
+		clickpos = 1;
+	if (clickpos >= 2)
+		clickpos = 2;
+
+	//selection
+	//conti
+	if (clickpos == 1 && (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)))
+		paused = false;
+	//main menu
+	if (clickpos == 2 && (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE)))
+		Application::SetScene(1);
+
+	clickbounce++;
+}
+void ShipRace::RenderPause()
+{
+	RenderQuadOnScreen(meshList[HUD_BLACK], 80, 60, 40, 30);
+	//Title
+	RenderMenuOnScreen(meshList[MENU_TEXT], "PAUSED", Color(0.9f, 0.9f, 0.9f), 7.f, 2.8f, 5.5f);
+	//continue
+	if (clickpos == 1)
+		RenderMenuOnScreen(meshList[MENU_TEXT], "Continue", Color(1.f, 1.f, 1.f), 4.f, 6.f, 5.f);
+	else
+		RenderMenuOnScreen(meshList[MENU_TEXT], "Continue", Color(0.5f, 0.5f, 0.5f), 4.f, 6.f, 5.f);
+	//main
+	if (clickpos == 2)
+		RenderMenuOnScreen(meshList[MENU_TEXT], "Main Menu", Color(1.f, 1.f, 1.f), 4.f, 5.5f, 4.f);
+	else
+		RenderMenuOnScreen(meshList[MENU_TEXT], "Main Menu", Color(0.5f, 0.5f, 0.5f), 4.f, 5.5f, 4.f);
 
 }

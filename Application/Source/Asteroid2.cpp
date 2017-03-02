@@ -16,9 +16,17 @@ void ShipRace::InitAsteroidField()
 {
 	meshList[ASTEROID1] = MeshBuilder::GenerateOBJ("Asteroid1", "OBJ//Asteroid1.obj");
 	meshList[ASTEROID1]->textureID = LoadTGA("Image//Asteroid_red.tga");
+	meshList[ASTEROID1]->material.kAmbient.Set(0.6f, 0.6f, 0.6f);
+	meshList[ASTEROID1]->material.kDiffuse.Set(0.5f, 0.5f, 0.5f);
+	meshList[ASTEROID1]->material.kSpecular.Set(0.2f, 0.2f, 0.2f);
+	meshList[ASTEROID1]->material.kShininess = 1.f;
 
 	meshList[ASTEROID2] = MeshBuilder::GenerateOBJ("Asteroid2", "OBJ//Asteroid2.obj");
 	meshList[ASTEROID2]->textureID = LoadTGA("Image//Asteroid_red.tga");
+	meshList[ASTEROID2]->material.kAmbient.Set(0.6f, 0.6f, 0.6f);
+	meshList[ASTEROID2]->material.kDiffuse.Set(0.5f, 0.5f, 0.5f);
+	meshList[ASTEROID2]->material.kSpecular.Set(0.2f, 0.2f, 0.2f);
+	meshList[ASTEROID2]->material.kShininess = 1.f;
 	
 	asteroids_amt = 5000; //keep below 400
 	max_dist = 100;
@@ -133,7 +141,7 @@ void ShipRace::RenderAsteroidField()
 			modelStack.Rotate(Ry, 0, 1, 0);
 			modelStack.Rotate(Rz, 0, 0, 1);
 			modelStack.Scale(12, 12, 12);
-			RenderMesh(meshList[ASTEROID2], false);
+			RenderMesh(meshList[ASTEROID2], true);
 			modelStack.PopMatrix();
 		}
 	}
@@ -160,7 +168,7 @@ void ShipRace::RenderAsteroidField()
 			modelStack.Rotate(Ry, 0, 1, 0);
 			modelStack.Rotate(Rz, 0, 0, 1);
 			modelStack.Scale(25, 25, 25);
-			RenderMesh(meshList[ASTEROID1], false);
+			RenderMesh(meshList[ASTEROID1], true);
 			modelStack.PopMatrix();
 		}
 	}

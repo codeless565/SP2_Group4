@@ -6,6 +6,7 @@
 #include "MatrixStack.h"
 #include "Light.h"
 #include "Material.h"
+#include "Menu.h"
 
 class GameOver : public Scene
 {
@@ -63,7 +64,6 @@ public:
 	virtual void Render();
 	virtual void Exit();
 
-
 private:
 	unsigned m_vertexArrayID;
 	Mesh *meshList[NUM_GEOMETRY];
@@ -83,6 +83,10 @@ private:
 	float framerate;
 
 	int position;
+	int bouncetimer;
+	bool main;
+
+	double xpos, ypos;
 };
 
 #endif

@@ -16,17 +16,14 @@ class SHIPDTP : public Scene
 {
 	enum GEOMETRY_TYPE
 	{
-		GEO_AXES,
 		GEO_CUBE,
-		//SKYBOX
 		SPACE_LEFT,
 		SPACE_RIGHT,
 		SPACE_TOP,
 		SPACE_BOTTOM,
 		SPACE_FRONT,
 		SPACE_BACK,
-
-		//LIGHT
+		
 		//Ships
 		PLAYERSHIP_BODY,
 		PLAYERSHIP_ENGINE,
@@ -40,10 +37,9 @@ class SHIPDTP : public Scene
 		HUD_COMPASS_ARROW,
 		HUD_HP,
 		HUD_ZONEOUT,
-		HUD_HDRIVE,
-		HUD_GAMEOVER,
-
-
+		HUD_BLACK,
+		HUD_BOOTUP,
+		
 		BATTLESHIP_BODY,
 		BATTLESHIP_ENGINE,
 
@@ -53,6 +49,8 @@ class SHIPDTP : public Scene
 
 		// TEXT
 		BNM_TEXT,
+		MISSION_TEXT,
+		MENU_TEXT,
 
 		// actions
 
@@ -116,7 +114,6 @@ private:
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 
-	float rotateAngle;
 	double framerate;
 
 	int enemyspeed;
@@ -208,6 +205,23 @@ private:
 	void UpdateShipHUD(double dt);	//Updates the ShipHUD
 	void RenderShipHUD();	//Renders the ShipHUD
 
+	//MissionText
+	void UpdateMissionBrief();
+	void RenderMissionBrief();
+	bool mission_Breifed;
+	float mission_brief_Time;
+	float text_colorBooting;		//for flashing the booting... text
+	float text_colorFlashing;
+	float bootUpBar;				//For scaling the boot up bar
+
+	//Pause
+	void RenderMenuOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
+	void UpdatePause();
+	void RenderPause();
+	bool paused;
+	int clickpos;
+	float clickbounce;
+	bool mainMenu;
 };
 
 #endif

@@ -31,7 +31,7 @@ class ShipRace : public Scene
 		SPACE_BACK,
 
 		//LIGHT
-		
+
 		//Player
 		PLAYERSHIP_BODY,
 		PLAYERSHIP_ENGINE,
@@ -55,7 +55,7 @@ class ShipRace : public Scene
 		SPACESTATION_MID,
 		SPACESTATION_BOTTOM,
 		SPACESTATION_BODY,
-		
+
 		//Ships
 		BATTLESHIP_BODY,
 		BATTLESHIP_ENGINE,
@@ -65,10 +65,11 @@ class ShipRace : public Scene
 		//Asteroids
 		ASTEROID1,
 		ASTEROID2,
-		
+
 		//TEXT
 		BNM_TEXT,
 		MISSION_TEXT,
+		MENU_TEXT,
 
 		// actions
 
@@ -134,15 +135,6 @@ private:
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	
 	float framerate;
-	
-	//MissionText
-	void RenderMissionBrief();
-	void UpdateMissionBrief();
-	bool mission_Breifed;
-	float mission_brief_Time;
-	float text_colorBooting;		//for flashing the booting... text
-	float text_colorFlashing;
-	float bootUpBar;				//For scaling the boot up bar
 
 	//PlayerShip
 	PlayerShip playership;
@@ -182,7 +174,6 @@ private:
 	bool nearGoal;
 	float GameClearTimer;
 
-
 	//SpaceStation
 	float SSTopRotate, SSMidRotate, SSBottomRotate, SSEntireRotate;
 
@@ -209,6 +200,24 @@ private:
 	void RenderAsteroidField();		//Render the Asteroids
 	void CheckAsteroidCollision();	//Checks Collision with Asteroid
 	void CheckEnemyCollision();		//Checks Collision against enemy
+	
+	//MissionText
+	void RenderMissionBrief();
+	void UpdateMissionBrief();
+	bool mission_Breifed;
+	float mission_brief_Time;
+	float text_colorBooting;		//for flashing the booting... text
+	float text_colorFlashing;
+	float bootUpBar;				//For scaling the boot up bar
+
+	//Pause
+	void RenderMenuOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
+	void UpdatePause();
+	void RenderPause();
+	bool paused;
+	int clickpos;
+	float clickbounce;
+	bool mainMenu;
 };
 
 #endif

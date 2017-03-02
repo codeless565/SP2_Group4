@@ -9,6 +9,10 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 
+#include "GLFW\glfw3.h"
+#include <iostream>
+
+using namespace std;
 
 GameOver::GameOver()
 {
@@ -121,64 +125,73 @@ void GameOver::Init()
 	projection.SetToPerspective(75.f, 4.f / 3.f, 0.1f, 50000.f);
 	projectionStack.LoadMatrix(projection);
 
-	position = 1;
-
+	position = 2;
+	bouncetimer = 100;
+	main = false;
 }
 
 void GameOver::Update(double dt)
 {
+	glfwGetCursorPos(Application::m_window, &xpos, &ypos);
+
 	framerate = 1 / dt;
 
-		float LSPEED = 10.f;
-		if (Application::IsKeyPressed('1')) //enable back face culling
-			glEnable(GL_CULL_FACE);
-		if (Application::IsKeyPressed('2')) //disable back face culling
-			glDisable(GL_CULL_FACE);
-		if (Application::IsKeyPressed('3'))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
-		if (Application::IsKeyPressed('4'))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
+	float LSPEED = 10.f;
+	if (Application::IsKeyPressed('1')) //enable back face culling
+		glEnable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('2')) //disable back face culling
+		glDisable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('3'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
+	if (Application::IsKeyPressed('4'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
 
-		if (Application::IsKeyPressed('I'))
-			light[0].position.z -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('K'))
-			light[0].position.z += (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('J'))
-			light[0].position.x -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('L'))
-			light[0].position.x += (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('O'))
-			light[0].position.y -= (float)(LSPEED * dt);
-		if (Application::IsKeyPressed('P'))
-			light[0].position.y += (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('I'))
+		light[0].position.z -= (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('K'))
+		light[0].position.z += (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('J'))
+		light[0].position.x -= (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('L'))
+		light[0].position.x += (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('O'))
+		light[0].position.y -= (float)(LSPEED * dt);
+	if (Application::IsKeyPressed('P'))
+		light[0].position.y += (float)(LSPEED * dt);
 
-		if (Application::IsKeyPressed('5'))
-		{
-			light[0].type = Light::LIGHT_POINT;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
-		else if (Application::IsKeyPressed('6'))
-		{
-			light[0].type = Light::LIGHT_DIRECTIONAL;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
-		else if (Application::IsKeyPressed('7'))
-		{
-			light[0].type = Light::LIGHT_SPOT;
-			glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		}
+	if (Application::IsKeyPressed('5'))
+	{
+		light[0].type = Light::LIGHT_POINT;
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+	}
+	else if (Application::IsKeyPressed('6'))
+	{
+		light[0].type = Light::LIGHT_DIRECTIONAL;
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+	}
+	else if (Application::IsKeyPressed('7'))
+	{
+		light[0].type = Light::LIGHT_SPOT;
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+	}
+	//Menu selection
 
-		if (Application::IsKeyPressed(VK_UP))
-			position--;
-		if (Application::IsKeyPressed(VK_DOWN))
-			position++;
 
-		if (position >= 3)
-			position = 3;
-		if (position <= 1)
-			position = 1;
+	if (xpos >= 240 && xpos <= 585 && ypos >= 400 && ypos <= 422)
+		position = 2;
 
+	//value locking
+
+
+//selection
+	//main menu
+	if (position == 2 && (Application::IsKeyPressed(VK_RETURN) || Application::IsKeyPressed(VK_SPACE) || Application::IsKeyPressed(VK_LBUTTON)))
+		Application::SetScene(1);
+
+	cout << "x: " <<  xpos << " y: " << ypos << endl;
+
+	bouncetimer++;
 }
 
 void GameOver::Render()
@@ -214,28 +227,16 @@ void GameOver::Render()
 	glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 
 	//=================================== Rendering OBJ ====================================================
-	
+
 	RenderQuadOnScreen(meshList[GAMEOVER], 80, 60, 40, 30);
 	//Game Over Title
 	RenderTextOnScreen(meshList[MENU_TEXT], "GAME OVER", Color(1, 0, 0), 7, 1.5f, 5.5f);
-
-	//Retry
-	if (position == 1)
-		RenderTextOnScreen(meshList[MENU_TEXT], "Retry", Color(1, 1, 1), 4, 7.6f, 5.f);
-	else
-		RenderTextOnScreen(meshList[MENU_TEXT], "Retry", Color(0.5f, 0.5f, 0.5f), 4, 7.6f, 5.f);
 
 	//Main Menu return button
 	if (position == 2)
 		RenderTextOnScreen(meshList[MENU_TEXT], "Main Menu", Color(1, 1, 1), 4, 6.f, 4.f);
 	else
 		RenderTextOnScreen(meshList[MENU_TEXT], "Main Menu", Color(0.5f, 0.5f, 0.5f), 4, 6.f, 4.f);
-
-	//Quit
-	if (position == 3)
-		RenderTextOnScreen(meshList[MENU_TEXT], "Quit", Color(1, 1, 1), 4, 8.f, 3.f);
-	else
-		RenderTextOnScreen(meshList[MENU_TEXT], "Quit", Color(0.5f, 0.5f, 0.5f), 4, 8.f, 3.f);
 }
 
 void GameOver::RenderMesh(Mesh *mesh, bool enableLight)

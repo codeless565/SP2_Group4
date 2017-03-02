@@ -26,10 +26,10 @@ public:
 	static Mesh* GenerateCone(const std::string &meshName, Color color, int numSlices, float radius);
 	static Mesh* GenerateTorus(const std::string &meshName, Color color, unsigned numStacks, unsigned numSlices, float outerRadius, float innerRadius);
 
-
 	static Mesh* GenerateOBJ(const std::string &meshName, const std::string &file_path);
 	static Mesh* GenerateText(const std::string &meshName, unsigned numRow, unsigned numCol);
 
+	static Mesh* GenerateQuadRepeated(const std::string &meshName, Color color);
 
 };
 
